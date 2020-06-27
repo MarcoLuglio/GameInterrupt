@@ -78,14 +78,10 @@ namespace GameInterruptLibraryCSCore
 			var bufferSize = 0;
 			const int intPtrByteSize32Bits = 4;
 			const int intPtrByteSize64Bits = 8;
-			int deviceInterfaceDetailDataSize = 0; // TODO size of what?
+			int deviceInterfaceDetailDataSize = intPtrByteSize64Bits;
 			if (IntPtr.Size == intPtrByteSize32Bits)
 			{
 				deviceInterfaceDetailDataSize = intPtrByteSize32Bits + Marshal.SystemDefaultCharSize;
-			}
-			else
-			{
-				deviceInterfaceDetailDataSize = intPtrByteSize64Bits;
 			}
 			var deviceInterfaceDetailData = new NativeMethods.SP_DEVICE_INTERFACE_DETAIL_DATA { Size = deviceInterfaceDetailDataSize };
 
