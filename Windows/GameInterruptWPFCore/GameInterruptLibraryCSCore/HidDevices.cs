@@ -11,11 +11,16 @@ namespace GameInterruptLibraryCSCore
 	public static class HidDevices
 	{
 
-		private static IEnumerable<DeviceInfo> EnumerateDevices()
+		private static IEnumerable<DeviceInfo> EnumerateHidDevices()
 		{
 			var devices = new List<DeviceInfo>();
-			var hidClass = HidClassGuid;
-			var deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref hidClass, null, 0, NativeMethods.DIGCF_PRESENT | NativeMethods.DIGCF_DEVICEINTERFACE);
+			var hidClass = HidDevices.HidClassGuid;
+			var deviceInfoSet = NativeMethods.SetupDiGetClassDevs(
+				classGuid: ref hidClass,
+				enumerator: null,
+				hwndParent: 0,
+				flags: NativeMethods.DIGCF_PRESENT | NativeMethods.DIGCF_DEVICEINTERFACE
+			);
 
 			if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
 			{
@@ -39,8 +44,11 @@ namespace GameInterruptLibraryCSCore
 						devices.Add(new DeviceInfo { Path = devicePath, Description = description });
 					}
 				}
+
 				NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
+
 			}
+
 			return devices;
 		}
 
@@ -56,6 +64,12 @@ namespace GameInterruptLibraryCSCore
 			return deviceInfoData;
 		}
 
+		/// <summary>
+		/// Document how that looks like for the controllers
+		/// </summary>
+		/// <param name="deviceInfoSet"></param>
+		/// <param name="deviceInterfaceData"></param>
+		/// <returns></returns>
 		private static string GetDevicePath(IntPtr deviceInfoSet, NativeMethods.SP_DEVICE_INTERFACE_DATA deviceInterfaceData)
 		{
 			var bufferSize = 0;
@@ -96,6 +110,12 @@ namespace GameInterruptLibraryCSCore
 			return null;
 		}
 
+		/// <summary>
+		/// Document how that looks like for the controllers
+		/// </summary>
+		/// <param name="deviceInfoSet"></param>
+		/// <param name="devinfoData"></param>
+		/// <returns></returns>
 		private static string GetDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
 		{
 			var descriptionBuffer = new byte[1024];
@@ -116,19 +136,23 @@ namespace GameInterruptLibraryCSCore
 			return descriptionBuffer.ToUTF8String();
 		}
 
+		/// <summary>
+		/// Document how that looks like for the controllers
+		/// Hid class should probably look something like this: {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+		/// </summary>
 		private static Guid HidClassGuid
 		{
 			get
 			{
-				if (lazyGhidClassGuid.Equals(Guid.Empty))
+				if (lazyHidClassGuid.Equals(Guid.Empty))
 				{
-					NativeMethods.HidD_GetHidGuid(ref lazyGhidClassGuid);
+					NativeMethods.HidD_GetHidGuid(ref lazyHidClassGuid);
 				}
-				return lazyGhidClassGuid;
+				return lazyHidClassGuid;
 			}
 		}
 
-		private static Guid lazyGhidClassGuid = Guid.Empty;
+		private static Guid lazyHidClassGuid = Guid.Empty;
 
 		private class DeviceInfo {
 
