@@ -12,6 +12,8 @@ namespace GameInterruptLibraryCSCore
 	public sealed class HidDevice
 	{
 
+		#region static
+
 		private static SafeFileHandle OpenHandle(String devicePathName, Boolean isExclusive, bool enumerate)
 		{
 			SafeFileHandle hidHandle;
@@ -45,6 +47,8 @@ namespace GameInterruptLibraryCSCore
 			return hidHandle;
 		}
 
+		#endregion
+
 		internal HidDevice(string devicePath, string description = null)
 		{
 			this.devicePath = devicePath;
@@ -66,21 +70,45 @@ namespace GameInterruptLibraryCSCore
 			}
 		}
 
+		public void OpenDevice(bool isExclusive)
+		{
+			if (this.IsOpen)
+			{
+				return;
+			}
+
+			try
+			{
+				if (this.SafeReadHandle == null || this.SafeReadHandle.IsInvalid)
+				{
+					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive, enumerate: false);
+				}
+			}
+			catch (Exception exception)
+			{
+				IsOpen = false;
+				throw new Exception("Error opening HID device.", exception);
+			}
+
+			this.IsOpen = !this.SafeReadHandle.IsInvalid;
+			this.IsExclusive = isExclusive;
+		}
+
 		public bool WriteOutputReportViaInterrupt(byte[] outputBuffer, int timeout)
 		{
 			try
 			{
-				if (this.safeReadHandle == null)
+				if (this.SafeReadHandle == null)
 				{
-					this.safeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
+					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
 				}
-				if (this.fileStream == null && !this.safeReadHandle.IsInvalid)
+				if (this.FileStream == null && !this.SafeReadHandle.IsInvalid)
 				{
-					this.fileStream = new FileStream(this.safeReadHandle, FileAccess.ReadWrite, outputBuffer.Length, true);
+					this.FileStream = new FileStream(this.SafeReadHandle, FileAccess.ReadWrite, outputBuffer.Length, true);
 				}
-				if (this.fileStream != null && this.fileStream.CanWrite && !this.safeReadHandle.IsInvalid)
+				if (this.FileStream != null && this.FileStream.CanWrite && !this.SafeReadHandle.IsInvalid)
 				{
-					this.fileStream.Write(outputBuffer, 0, outputBuffer.Length);
+					this.FileStream.Write(outputBuffer, 0, outputBuffer.Length);
 					return true;
 				}
 				else
@@ -99,17 +127,17 @@ namespace GameInterruptLibraryCSCore
 		{
 			try
 			{
-				if (this.safeReadHandle == null)
+				if (this.SafeReadHandle == null)
 				{
-					this.safeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
+					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
 				}
-				if (this.fileStream == null && !this.safeReadHandle.IsInvalid)
+				if (this.FileStream == null && !this.SafeReadHandle.IsInvalid)
 				{
-					this.fileStream = new FileStream(this.safeReadHandle, FileAccess.ReadWrite, outputBuffer.Length, true);
+					this.FileStream = new FileStream(this.SafeReadHandle, FileAccess.ReadWrite, outputBuffer.Length, true);
 				}
-				if (this.fileStream != null && this.fileStream.CanWrite && !this.safeReadHandle.IsInvalid)
+				if (this.FileStream != null && this.FileStream.CanWrite && !this.SafeReadHandle.IsInvalid)
 				{
-					Task writeTask = this.fileStream.WriteAsync(outputBuffer, 0, outputBuffer.Length);
+					Task writeTask = this.FileStream.WriteAsync(outputBuffer, 0, outputBuffer.Length);
 					return true;
 				}
 				else
@@ -124,21 +152,25 @@ namespace GameInterruptLibraryCSCore
 
 		}
 
-		public SafeFileHandle safeReadHandle { get; private set; }
+		public bool IsOpen { get; private set; }
 
-		public FileStream fileStream { get; private set; }
+		public bool IsExclusive { get; private set; }
 
-		public HidDeviceCapabilities Capabilities { get { return this.deviceCapabilities; } }
+		public SafeFileHandle SafeReadHandle { get; private set; }
 
-		public HidDeviceAttributes Attributes { get { return this.deviceAttributes; } }
+		public FileStream FileStream { get; private set; }
+
+		public string Description { get { return this.description; } }
+
+		public string DevicePath { get { return this.devicePath; } }
+
+		public HidDeviceAttributes Attributes { get; }
+
+		public HidDeviceCapabilities Capabilities { get; }
 
 		private readonly string description;
 
 		private readonly string devicePath;
-
-		private readonly HidDeviceAttributes deviceAttributes;
-
-		private readonly HidDeviceCapabilities deviceCapabilities;
 
 	}
 

@@ -17,7 +17,14 @@ namespace GameInterruptLibraryCSCore
 	// NoGyroCalib          = Gamepad doesn't support or need gyro calibration routines. Skip gyro calibration if this flag is set. Some gamepad do have gyro, but don't support calibration or gyro sensors are missing.
 	//
 	[Flags]
-	public enum VidPidFeatureSet : ushort { DefaultDS4 = 0, OnlyInputData0x01 = 1, OnlyOutputData0x05 = 2, NoOutputData = 4, NoBatteryReading = 8, NoGyroCalib = 16 };
+	public enum VendorIdProductIdFeatureSet : ushort {
+		DefaultDS4 = 0,
+		OnlyInputData0x01 = 1,
+		OnlyOutputData0x05 = 2,
+		NoOutputData = 4,
+		NoBatteryReading = 8,
+		NoGyroCalib = 16
+	};
 
 	public class VendorIdProductIdInfo
 	{
@@ -25,9 +32,9 @@ namespace GameInterruptLibraryCSCore
 		public readonly int vendorId;
 		public readonly int productId;
 		public readonly string name;
-		public readonly VidPidFeatureSet featureSet;
+		public readonly VendorIdProductIdFeatureSet featureSet;
 
-		internal VendorIdProductIdInfo(int vendorId, int productId, string name = "Generic DS4", VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
+		internal VendorIdProductIdInfo(int vendorId, int productId, string name = "Generic DS4", VendorIdProductIdFeatureSet featureSet = VendorIdProductIdFeatureSet.DefaultDS4)
 		{
 			this.vendorId = vendorId;
 			this.productId = productId;

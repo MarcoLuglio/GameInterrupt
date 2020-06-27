@@ -3,7 +3,7 @@
 
 
 // Originally from DS4Windows project
-namespace GameInterruptLibraryCSCore
+namespace GameInterruptLibraryCSCore.Util
 {
 
 	public static class Extensions
