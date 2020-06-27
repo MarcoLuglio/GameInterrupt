@@ -15,14 +15,14 @@ namespace GameInterruptLibraryCSCore
 		private static SafeFileHandle OpenHandle(String devicePathName, Boolean isExclusive, bool enumerate)
 		{
 			SafeFileHandle hidHandle;
-			uint access = enumerate ? 0 : NativeMethods.GENERIC_READ | NativeMethods.GENERIC_WRITE;
+			uint access = enumerate ? 0 : NativeMethods.GENERIC_READ | NativeMethods.GENERIC_WRITE; // TODO 0 means no access??
 
 			if (isExclusive)
 			{
 				hidHandle = NativeMethods.CreateFile(
 					lpFileName: devicePathName,
 					dwDesiredAccess: access,
-					dwShareMode: 0,
+					dwShareMode: 0, // TODO magic number
 					lpSecurityAttributes: IntPtr.Zero, // pointer to nothing - no securitiy attributes
 					dwCreationDisposition: NativeMethods.OpenExisting,
 					dwFlagsAndAttributes: 0x20000000 | 0x80000000 | 0x100 | NativeMethods.FILE_FLAG_OVERLAPPED, // TODO magic bytes
@@ -128,13 +128,17 @@ namespace GameInterruptLibraryCSCore
 
 		public FileStream fileStream { get; private set; }
 
+		public HidDeviceCapabilities Capabilities { get { return this.deviceCapabilities; } }
+
+		public HidDeviceAttributes Attributes { get { return this.deviceAttributes; } }
+
 		private readonly string description;
 
 		private readonly string devicePath;
 
-		// private readonly HidDeviceAttributes deviceAttributes;
+		private readonly HidDeviceAttributes deviceAttributes;
 
-		// private readonly HidDeviceCapabilities deviceCapabilities;
+		private readonly HidDeviceCapabilities deviceCapabilities;
 
 	}
 

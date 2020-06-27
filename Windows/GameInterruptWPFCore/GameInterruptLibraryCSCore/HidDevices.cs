@@ -11,7 +11,7 @@ namespace GameInterruptLibraryCSCore
 	public static class HidDevices
 	{
 
-		private static IEnumerable<DeviceInfo> EnumerateHidDevices()
+		public static IEnumerable<DeviceInfo> EnumerateHidDevices()
 		{
 			var devices = new List<DeviceInfo>();
 			var hidClass = HidDevices.HidClassGuid;
@@ -41,7 +41,10 @@ namespace GameInterruptLibraryCSCore
 						var devicePath = GetDevicePath(deviceInfoSet, deviceInterfaceData);
 						var description = GetBusReportedDeviceDescription(deviceInfoSet, ref deviceInfoData) ??
 										  GetDeviceDescription(deviceInfoSet, ref deviceInfoData);
-						devices.Add(new DeviceInfo { Path = devicePath, Description = description });
+						devices.Add(new DeviceInfo {
+							Path = devicePath,
+							Description = description
+						});
 					}
 				}
 
@@ -73,12 +76,44 @@ namespace GameInterruptLibraryCSCore
 		private static string GetDevicePath(IntPtr deviceInfoSet, NativeMethods.SP_DEVICE_INTERFACE_DATA deviceInterfaceData)
 		{
 			var bufferSize = 0;
-			var interfaceDetail = new NativeMethods.SP_DEVICE_INTERFACE_DETAIL_DATA { Size = IntPtr.Size == 4 ? 4 + Marshal.SystemDefaultCharSize : 8 };
+			const int intPtrByteSize32Bits = 4;
+			const int intPtrByteSize64Bits = 8;
+			int deviceInterfaceDetailDataSize = 0; // TODO size of what?
+			if (IntPtr.Size == intPtrByteSize32Bits)
+			{
+				deviceInterfaceDetailDataSize = intPtrByteSize32Bits + Marshal.SystemDefaultCharSize;
+			}
+			else
+			{
+				deviceInterfaceDetailDataSize = intPtrByteSize64Bits;
+			}
+			var deviceInterfaceDetailData = new NativeMethods.SP_DEVICE_INTERFACE_DETAIL_DATA { Size = deviceInterfaceDetailDataSize };
 
-			NativeMethods.SetupDiGetDeviceInterfaceDetailBuffer(deviceInfoSet, ref deviceInterfaceData, IntPtr.Zero, 0, ref bufferSize, IntPtr.Zero);
+			NativeMethods.SetupDiGetDeviceInterfaceDetailBuffer(
+				deviceInfoSet,
+				ref deviceInterfaceData,
+				deviceInterfaceDetailData: IntPtr.Zero, // no details
+				deviceInterfaceDetailDataSize: 0,
+				requiredSize: ref bufferSize,
+				deviceInfoData: IntPtr.Zero
+			);
 
-			return NativeMethods.SetupDiGetDeviceInterfaceDetail(deviceInfoSet, ref deviceInterfaceData, ref interfaceDetail, bufferSize, ref bufferSize, IntPtr.Zero) ?
-				interfaceDetail.DevicePath : null;
+			var success = NativeMethods.SetupDiGetDeviceInterfaceDetail(
+				deviceInfoSet,
+				ref deviceInterfaceData,
+				ref deviceInterfaceDetailData,
+				deviceInterfaceDetailDataSize: bufferSize,
+				requiredSize: ref bufferSize,
+				deviceInfoData: IntPtr.Zero
+			);
+
+			if (success)
+			{
+				return deviceInterfaceDetailData.DevicePath;
+			}
+
+			return null;
+
 		}
 
 		private static string GetBusReportedDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
@@ -153,14 +188,6 @@ namespace GameInterruptLibraryCSCore
 		}
 
 		private static Guid lazyHidClassGuid = Guid.Empty;
-
-		private class DeviceInfo {
-
-			public string Path { get; set; }
-
-			public string Description { get; set; }
-
-		}
 
 	}
 
