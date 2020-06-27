@@ -12,29 +12,29 @@ namespace GameInterruptLibraryCSCore
 
 		private const int GAME_CONTROLLER_USAGE_PAGE = 0x05;
 
-		public static IEnumerable<HidDevice> EnumerateHidDualShock4(VendorIdProductIdInfo[] deviceInfo)
+		public static IEnumerable<HidDevice> EnumerateHidDualShock4(VendorIdProductIdInfo[] vendorIdProductIdInfoArray)
 		{
 			var foundHidDevices = new List<HidDevice>();
-			var deviceInfoLen = deviceInfo.Length;
-			IEnumerable<DeviceInfo> temp = HidDevices.EnumerateHidDevices();
+			var vendorIdProductIdInfoArrayLen = vendorIdProductIdInfoArray.Length;
+			var temp = HidDevices.EnumerateHidDevices();
 
-			for (var devEnum = temp.GetEnumerator(); devEnum.MoveNext();)
+			for (var deviceEnumerator = temp.GetEnumerator(); deviceEnumerator.MoveNext();)
 			//for (int i = 0, len = temp.Count(); i < len; i++)
 			{
-				DeviceInfo x = devEnum.Current;
+				var deviceInfo = deviceEnumerator.Current;
 				//DeviceInfo x = temp.ElementAt(i);
-				HidDevice tempDev = new HidDevice(x.Path, x.Description);
-				//AppLogger.LogToGui($"DEBUG: HID#{iDebugDevCount} Path={x.Path}  Description={x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}", false);
-				bool found = false;
-				for (int j = 0; !found && j < deviceInfoLen; j++)
+				var tempDevice = new HidDevice(deviceInfo.Path, deviceInfo.Description);
+				//AppLogger.LogToGui($"DEBUG: HID#{iDebugDevCount} Path={x.Path}  Description={x.Description}  VID={tempDevice.Attributes.VendorHexId}  PID={tempDevice.Attributes.ProductHexId}  Usage=0x{tempDevice.Capabilities.Usage.ToString("X")}  Version=0x{tempDevice.Attributes.Version.ToString("X")}", false);
+				var found = false;
+				for (int j = 0; !found && j < vendorIdProductIdInfoArrayLen; j++)
 				{
-					VendorIdProductIdInfo tempInfo = deviceInfo[j];
-					if (tempDev.Capabilities.Usage == GAME_CONTROLLER_USAGE_PAGE &&
-						tempDev.Attributes.VendorId == tempInfo.vendorId &&
-						tempDev.Attributes.ProductId == tempInfo.productId)
+					VendorIdProductIdInfo vendorIdProductIdInfo = vendorIdProductIdInfoArray[j];
+					if (tempDevice.Capabilities.Usage == GAME_CONTROLLER_USAGE_PAGE &&
+						tempDevice.Attributes.VendorId == vendorIdProductIdInfo.vendorId &&
+						tempDevice.Attributes.ProductId == vendorIdProductIdInfo.productId)
 					{
 						found = true;
-						foundHidDevices.Add(tempDev);
+						foundHidDevices.Add(tempDevice);
 					}
 				}
 			}
