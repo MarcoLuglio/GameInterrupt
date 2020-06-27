@@ -1,0 +1,12 @@
+# Windows
+*.user
+*.db
+.vs
+bin
+obj
+x86
+x64
+Debug
+Release
+
+# Mac
