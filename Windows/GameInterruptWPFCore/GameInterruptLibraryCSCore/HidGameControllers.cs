@@ -16,9 +16,9 @@ namespace GameInterruptLibraryCSCore
 	public static class HidGameControllers
 	{
 
-		public static void findControllers()
+		public static void FindControllers()
 		{
-			lock (Devices) // TODO will this be called by multiple threads? why?
+			lock (HidGameControllers.devices) // TODO will this be called by multiple threads? why?
 			{
 				var hidGameControllers = HidGameControllers.EnumerateHidControllersMatching(vendorIdProductIdInfoArray: HidGameControllers.dualShock4CompatibleDevices);
 				hidGameControllers = hidGameControllers
@@ -64,7 +64,7 @@ namespace GameInterruptLibraryCSCore
 								if (!elevated)
 								{
 									// Tell the client to launch routine to re-enable a device
-									RequestElevationArgs eleArgs = new RequestElevationArgs(devicePathToInstanceId(tempHidGameController.DevicePath));
+									RequestElevationArgs eleArgs = new RequestElevationArgs(HidGameControllers.DevicePathToInstanceId(tempHidGameController.DevicePath));
 									RequestElevation?.Invoke(eleArgs);
 									if (eleArgs.StatusCode == RequestElevationArgs.STATUS_SUCCESS)
 									{
@@ -73,7 +73,7 @@ namespace GameInterruptLibraryCSCore
 								}
 								else
 								{
-									HidGameControllers.ReEnableDevice(devicePathToInstanceId(tempHidGameController.DevicePath));
+									HidGameControllers.ReEnableDevice(HidGameControllers.DevicePathToInstanceId(tempHidGameController.DevicePath));
 									tempHidGameController.OpenDevice(HidGameControllers.isExclusiveMode);
 								}
 							}
@@ -119,7 +119,7 @@ namespace GameInterruptLibraryCSCore
 							//ds4Device.Removal += On_Removal;
 							if (!ds4Device.ExitOutputThread)
 							{
-								HidGameControllers.Devices.Add(tempHidGameController.DevicePath, ds4Device);
+								HidGameControllers.devices.Add(tempHidGameController.DevicePath, ds4Device);
 								HidGameControllers.devicePaths.Add(tempHidGameController.DevicePath);
 								HidGameControllers.deviceSerials.Add(serial);
 							}
@@ -132,7 +132,7 @@ namespace GameInterruptLibraryCSCore
 		// TODO why do I need this?
 		private static bool IsRealDS4(HidDevice hidGameController)
 		{
-			string deviceInstanceId = devicePathToInstanceId(hidGameController.DevicePath);
+			string deviceInstanceId = HidGameControllers.DevicePathToInstanceId(hidGameController.DevicePath);
 			string numberForUI = HidGameControllers.GetDeviceProperty(
 				deviceInstanceId,
 				NativeMethods.DEVPKEY_Device_UINumber
@@ -141,7 +141,7 @@ namespace GameInterruptLibraryCSCore
 		}
 
 		// TODO maybbe this and the associated code that checks this should go in the hid devices class
-		private static string devicePathToInstanceId(string devicePath)
+		private static string DevicePathToInstanceId(string devicePath)
 		{
 			string deviceInstanceId = devicePath;
 			deviceInstanceId = deviceInstanceId.Remove(0, deviceInstanceId.LastIndexOf('\\') + 1);
@@ -376,7 +376,7 @@ namespace GameInterruptLibraryCSCore
 
 		public static bool isExclusiveMode = false; // TODO when does this changes to true?
 
-		private static Dictionary<string, DualShock4Controller> Devices = new Dictionary<string, DualShock4Controller>();
+		private static Dictionary<string, DualShock4Controller> devices = new Dictionary<string, DualShock4Controller>();
 
 		private static List<HidDevice> disabledDevices = new List<HidDevice>();
 
