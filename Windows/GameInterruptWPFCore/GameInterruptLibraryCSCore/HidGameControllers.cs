@@ -2,7 +2,9 @@
 using GameInterruptLibraryCSCore.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 
@@ -21,12 +23,13 @@ namespace GameInterruptLibraryCSCore
 				var hidGameControllers = HidGameControllers.EnumerateHidControllersMatching(vendorIdProductIdInfoArray: HidGameControllers.dualShock4CompatibleDevices);
 				hidGameControllers = hidGameControllers
 					.Where(hidController => IsRealDS4(hidController))
-					.OrderBy<HidDevice, ConnectionType>((HidDevice hidGameController) => { // Sort Bluetooth first in case USB is also connected on the same controller.
+					.OrderBy<HidDevice, ConnectionType>((HidDevice hidGameController) =>
+					{ // Sort Bluetooth first in case USB is also connected on the same controller.
 						return DualShock4Controller.HidConnectionType(hidGameController);
 					});
-				
+
 				var tempHidGameControllers = hidGameControllers.ToList(); // TODO it's already an IEnumerable, why tolist()?? Just to create a copy? Why creating a copy?
-				// TODO purgeHiddenExclusiveDevices();
+																		  // TODO purgeHiddenExclusiveDevices();
 				tempHidGameControllers.AddRange(HidGameControllers.disabledDevices);
 				int hidGameControllersCount = tempHidGameControllers.Count();
 				string devicePlural = "device" + (hidGameControllersCount == 0 || hidGameControllersCount > 1 ? "s" : "");
@@ -40,7 +43,7 @@ namespace GameInterruptLibraryCSCore
 					{
 						continue; // ignore the Nacon Revolution Pro programming interface
 					}
-					
+
 					if (HidGameControllers.devicePaths.Contains(tempHidGameController.DevicePath))
 					{
 						continue; // BT/USB endpoint already open once
@@ -70,11 +73,12 @@ namespace GameInterruptLibraryCSCore
 								}
 								else
 								{
-									reEnableDevice(devicePathToInstanceId(tempHidGameController.DevicePath));
+									HidGameControllers.ReEnableDevice(devicePathToInstanceId(tempHidGameController.DevicePath));
 									tempHidGameController.OpenDevice(HidGameControllers.isExclusiveMode);
 								}
 							}
-							catch (Exception) {
+							catch (Exception)
+							{
 								// FIXME log this!
 							}
 						}
@@ -88,8 +92,8 @@ namespace GameInterruptLibraryCSCore
 
 					if (tempHidGameController.IsOpen)
 					{
-						string serial = tempHidGameController.readSerial();
-						bool validSerial = !serial.Equals(DualShock4Controller.blankSerial);
+						string serial = tempHidGameController.ReadSerial();
+						bool validSerial = !serial.Equals(HidDevice.blankSerial);
 						if (validSerial && deviceSerials.Contains(serial))
 						{
 							// happens when the BT endpoint already is open and the USB is plugged into the same host
@@ -208,15 +212,133 @@ namespace GameInterruptLibraryCSCore
 			return foundHidDevices;
 		}
 
+		// TODO looks like some of this code is redundant, maybe refactor later
+		public static void ReEnableDevice(string deviceInstanceId)
+		{
+
+			bool success;
+			var hidGuid = new Guid();
+			NativeMethods.HidD_GetHidGuid(ref hidGuid);
+
+			IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(
+				ref hidGuid,
+				deviceInstanceId,
+				0,
+				NativeMethods.DIGCF_PRESENT | NativeMethods.DIGCF_DEVICEINTERFACE
+			);
+			NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
+			deviceInfoData.cbSize = Marshal.SizeOf(deviceInfoData);
+
+			success = NativeMethods.SetupDiEnumDeviceInfo(
+				deviceInfoSet,
+				0,
+				ref deviceInfoData
+			);
+
+			if (!success)
+			{
+				throw new Exception("Error getting device info data, error code = " + Marshal.GetLastWin32Error());
+			}
+
+			success = NativeMethods.SetupDiEnumDeviceInfo(
+				deviceInfoSet,
+				1,
+				ref deviceInfoData
+			); // Checks that we have a unique device
+
+			if (success)
+			{
+				throw new Exception("Can't find unique device");
+			}
+
+			NativeMethods.SP_PROPCHANGE_PARAMS propChangeParams = new NativeMethods.SP_PROPCHANGE_PARAMS();
+			propChangeParams.classInstallHeader.cbSize = Marshal.SizeOf(propChangeParams.classInstallHeader);
+			propChangeParams.classInstallHeader.installFunction = NativeMethods.DIF_PROPERTYCHANGE;
+			propChangeParams.stateChange = NativeMethods.DICS_DISABLE;
+			propChangeParams.scope = NativeMethods.DICS_FLAG_GLOBAL;
+			propChangeParams.hwProfile = 0;
+
+			success = NativeMethods.SetupDiSetClassInstallParams(
+				deviceInfoSet,
+				ref deviceInfoData,
+				ref propChangeParams,
+				Marshal.SizeOf(propChangeParams)
+			);
+
+			if (!success)
+			{
+				throw new Exception("Error setting class install params, error code = " + Marshal.GetLastWin32Error());
+			}
+
+			success = NativeMethods.SetupDiCallClassInstaller(NativeMethods.DIF_PROPERTYCHANGE, deviceInfoSet, ref deviceInfoData);
+			// TEST: If previous SetupDiCallClassInstaller fails, just continue
+			// otherwise device will likely get permanently disabled.
+			/*
+			if (!success)
+			{
+				throw new Exception("Error disabling device, error code = " + Marshal.GetLastWin32Error());
+			}
+			*/
+
+			//System.Threading.Thread.Sleep(50);
+			HidGameControllers.stopWatch.Restart();
+			while (HidGameControllers.stopWatch.ElapsedMilliseconds < 100)
+			{
+				// Use SpinWait to keep control of current thread. Using Sleep could potentially
+				// cause other events to get run out of order
+				System.Threading.Thread.SpinWait(100);
+			}
+			HidGameControllers.stopWatch.Stop();
+
+			propChangeParams.stateChange = NativeMethods.DICS_ENABLE;
+
+			success = NativeMethods.SetupDiSetClassInstallParams(
+				deviceInfoSet,
+				ref deviceInfoData,
+				ref propChangeParams,
+				Marshal.SizeOf(propChangeParams)
+			);
+
+			if (!success)
+			{
+				throw new Exception("Error setting class install params, error code = " + Marshal.GetLastWin32Error());
+			}
+
+			success = NativeMethods.SetupDiCallClassInstaller(
+				NativeMethods.DIF_PROPERTYCHANGE,
+				deviceInfoSet,
+				ref deviceInfoData
+			);
+
+			if (!success)
+			{
+				throw new Exception("Error enabling device, error code = " + Marshal.GetLastWin32Error());
+			}
+
+			//System.Threading.Thread.Sleep(50);
+			/*sw.Restart();
+			while (sw.ElapsedMilliseconds < 50)
+			{
+				// Use SpinWait to keep control of current thread. Using Sleep could potentially
+				// cause other events to get run out of order
+				System.Threading.Thread.SpinWait(100);
+			}
+			sw.Stop();
+			*/
+
+			NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
+
+		}
+
 		public static event RequestElevationDelegate RequestElevation;
 
 		private const int GAME_CONTROLLER_USAGE_PAGE = 0x05;
 
 		// TODO does this needs to be internal? Can it be private
-		internal const int SONY_VENDOR_ID  = 0x054C;
+		internal const int SONY_VENDOR_ID = 0x054C;
 		internal const int RAZER_VENDOR_ID = 0x1532;
 		internal const int NACON_VENDOR_ID = 0x146B;
-		internal const int HORI_VENDOR_ID  = 0x0F0D;
+		internal const int HORI_VENDOR_ID = 0x0F0D;
 
 		private const int SONY_WIRELESS_ADAPTER_PRODUCT_ID = 0xBA0;
 		private const int DUALSHOCK4_V1_PRODUCT_ID = 0x5C4;
@@ -261,6 +383,8 @@ namespace GameInterruptLibraryCSCore
 		private static HashSet<string> devicePaths = new HashSet<string>();
 
 		private static HashSet<string> deviceSerials = new HashSet<string>();
+
+		private static Stopwatch stopWatch = new Stopwatch();
 
 	}
 

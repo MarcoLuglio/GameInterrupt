@@ -30,8 +30,6 @@ namespace GameInterruptLibraryCSCore.Controllers
 			return result;
 		}
 
-		public const string blankSerial = "00:00:00:00:00:00";
-
 		#endregion
 
 		public DualShock4Controller(HidDevice hidGameController, string displayName, VendorIdProductIdFeatureSet featureSet = VendorIdProductIdFeatureSet.DefaultDS4)
