@@ -1,0 +1,590 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A9A75AEC24AACEA000D6698C /* GameInterruptApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A75AEB24AACEA000D6698C /* GameInterruptApp.swift */; };
+		A9A75AEE24AACEA000D6698C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A75AED24AACEA000D6698C /* ContentView.swift */; };
+		A9A75AF024AACEA100D6698C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9A75AEF24AACEA100D6698C /* Assets.xcassets */; };
+		A9A75AF324AACEA100D6698C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9A75AF224AACEA100D6698C /* Preview Assets.xcassets */; };
+		A9A75AFF24AACEA100D6698C /* GameInterruptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A75AFE24AACEA100D6698C /* GameInterruptTests.swift */; };
+		A9A75B0A24AACEA100D6698C /* GameInterruptUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A75B0924AACEA100D6698C /* GameInterruptUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A9A75AFB24AACEA100D6698C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9A75AE024AACEA000D6698C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A9A75AE724AACEA000D6698C;
+			remoteInfo = GameInterrupt;
+		};
+		A9A75B0624AACEA100D6698C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9A75AE024AACEA000D6698C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A9A75AE724AACEA000D6698C;
+			remoteInfo = GameInterrupt;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A9A75AE824AACEA000D6698C /* GameInterrupt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameInterrupt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9A75AEB24AACEA000D6698C /* GameInterruptApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptApp.swift; sourceTree = "<group>"; };
+		A9A75AED24AACEA000D6698C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A9A75AEF24AACEA100D6698C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A9A75AF224AACEA100D6698C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A9A75AF424AACEA100D6698C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9A75AF524AACEA100D6698C /* GameInterrupt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GameInterrupt.entitlements; sourceTree = "<group>"; };
+		A9A75AFA24AACEA100D6698C /* GameInterruptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9A75AFE24AACEA100D6698C /* GameInterruptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptTests.swift; sourceTree = "<group>"; };
+		A9A75B0024AACEA100D6698C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9A75B0524AACEA100D6698C /* GameInterruptUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9A75B0924AACEA100D6698C /* GameInterruptUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptUITests.swift; sourceTree = "<group>"; };
+		A9A75B0B24AACEA100D6698C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A9A75AE524AACEA000D6698C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75AF724AACEA100D6698C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75B0224AACEA100D6698C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A9A75ADF24AACEA000D6698C = {
+			isa = PBXGroup;
+			children = (
+				A9A75AEA24AACEA000D6698C /* GameInterrupt */,
+				A9A75AFD24AACEA100D6698C /* GameInterruptTests */,
+				A9A75B0824AACEA100D6698C /* GameInterruptUITests */,
+				A9A75AE924AACEA000D6698C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A9A75AE924AACEA000D6698C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A9A75AE824AACEA000D6698C /* GameInterrupt.app */,
+				A9A75AFA24AACEA100D6698C /* GameInterruptTests.xctest */,
+				A9A75B0524AACEA100D6698C /* GameInterruptUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A9A75AEA24AACEA000D6698C /* GameInterrupt */ = {
+			isa = PBXGroup;
+			children = (
+				A9A75AEB24AACEA000D6698C /* GameInterruptApp.swift */,
+				A9A75AED24AACEA000D6698C /* ContentView.swift */,
+				A9A75AEF24AACEA100D6698C /* Assets.xcassets */,
+				A9A75AF424AACEA100D6698C /* Info.plist */,
+				A9A75AF524AACEA100D6698C /* GameInterrupt.entitlements */,
+				A9A75AF124AACEA100D6698C /* Preview Content */,
+			);
+			path = GameInterrupt;
+			sourceTree = "<group>";
+		};
+		A9A75AF124AACEA100D6698C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				A9A75AF224AACEA100D6698C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		A9A75AFD24AACEA100D6698C /* GameInterruptTests */ = {
+			isa = PBXGroup;
+			children = (
+				A9A75AFE24AACEA100D6698C /* GameInterruptTests.swift */,
+				A9A75B0024AACEA100D6698C /* Info.plist */,
+			);
+			path = GameInterruptTests;
+			sourceTree = "<group>";
+		};
+		A9A75B0824AACEA100D6698C /* GameInterruptUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A9A75B0924AACEA100D6698C /* GameInterruptUITests.swift */,
+				A9A75B0B24AACEA100D6698C /* Info.plist */,
+			);
+			path = GameInterruptUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A9A75AE724AACEA000D6698C /* GameInterrupt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9A75B0E24AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterrupt" */;
+			buildPhases = (
+				A9A75AE424AACEA000D6698C /* Sources */,
+				A9A75AE524AACEA000D6698C /* Frameworks */,
+				A9A75AE624AACEA000D6698C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameInterrupt;
+			productName = GameInterrupt;
+			productReference = A9A75AE824AACEA000D6698C /* GameInterrupt.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A9A75AF924AACEA100D6698C /* GameInterruptTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9A75B1124AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterruptTests" */;
+			buildPhases = (
+				A9A75AF624AACEA100D6698C /* Sources */,
+				A9A75AF724AACEA100D6698C /* Frameworks */,
+				A9A75AF824AACEA100D6698C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A9A75AFC24AACEA100D6698C /* PBXTargetDependency */,
+			);
+			name = GameInterruptTests;
+			productName = GameInterruptTests;
+			productReference = A9A75AFA24AACEA100D6698C /* GameInterruptTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A9A75B0424AACEA100D6698C /* GameInterruptUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9A75B1424AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterruptUITests" */;
+			buildPhases = (
+				A9A75B0124AACEA100D6698C /* Sources */,
+				A9A75B0224AACEA100D6698C /* Frameworks */,
+				A9A75B0324AACEA100D6698C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A9A75B0724AACEA100D6698C /* PBXTargetDependency */,
+			);
+			name = GameInterruptUITests;
+			productName = GameInterruptUITests;
+			productReference = A9A75B0524AACEA100D6698C /* GameInterruptUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A9A75AE024AACEA000D6698C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1200;
+				LastUpgradeCheck = 1200;
+				TargetAttributes = {
+					A9A75AE724AACEA000D6698C = {
+						CreatedOnToolsVersion = 12.0;
+					};
+					A9A75AF924AACEA100D6698C = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = A9A75AE724AACEA000D6698C;
+					};
+					A9A75B0424AACEA100D6698C = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = A9A75AE724AACEA000D6698C;
+					};
+				};
+			};
+			buildConfigurationList = A9A75AE324AACEA000D6698C /* Build configuration list for PBXProject "GameInterrupt" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A9A75ADF24AACEA000D6698C;
+			productRefGroup = A9A75AE924AACEA000D6698C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A9A75AE724AACEA000D6698C /* GameInterrupt */,
+				A9A75AF924AACEA100D6698C /* GameInterruptTests */,
+				A9A75B0424AACEA100D6698C /* GameInterruptUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A9A75AE624AACEA000D6698C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9A75AF324AACEA100D6698C /* Preview Assets.xcassets in Resources */,
+				A9A75AF024AACEA100D6698C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75AF824AACEA100D6698C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75B0324AACEA100D6698C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A9A75AE424AACEA000D6698C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9A75AEE24AACEA000D6698C /* ContentView.swift in Sources */,
+				A9A75AEC24AACEA000D6698C /* GameInterruptApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75AF624AACEA100D6698C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9A75AFF24AACEA100D6698C /* GameInterruptTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9A75B0124AACEA100D6698C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9A75B0A24AACEA100D6698C /* GameInterruptUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A9A75AFC24AACEA100D6698C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A9A75AE724AACEA000D6698C /* GameInterrupt */;
+			targetProxy = A9A75AFB24AACEA100D6698C /* PBXContainerItemProxy */;
+		};
+		A9A75B0724AACEA100D6698C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A9A75AE724AACEA000D6698C /* GameInterrupt */;
+			targetProxy = A9A75B0624AACEA100D6698C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A9A75B0C24AACEA100D6698C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A9A75B0D24AACEA100D6698C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		A9A75B0F24AACEA100D6698C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GameInterrupt/GameInterrupt.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterrupt/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterrupt/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterrupt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A9A75B1024AACEA100D6698C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GameInterrupt/GameInterrupt.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterrupt/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterrupt/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterrupt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A9A75B1224AACEA100D6698C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterrupt.app/Contents/MacOS/GameInterrupt";
+			};
+			name = Debug;
+		};
+		A9A75B1324AACEA100D6698C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterrupt.app/Contents/MacOS/GameInterrupt";
+			};
+			name = Release;
+		};
+		A9A75B1524AACEA100D6698C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = GameInterrupt;
+			};
+			name = Debug;
+		};
+		A9A75B1624AACEA100D6698C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = GameInterrupt;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A9A75AE324AACEA000D6698C /* Build configuration list for PBXProject "GameInterrupt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9A75B0C24AACEA100D6698C /* Debug */,
+				A9A75B0D24AACEA100D6698C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9A75B0E24AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterrupt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9A75B0F24AACEA100D6698C /* Debug */,
+				A9A75B1024AACEA100D6698C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9A75B1124AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterruptTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9A75B1224AACEA100D6698C /* Debug */,
+				A9A75B1324AACEA100D6698C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9A75B1424AACEA100D6698C /* Build configuration list for PBXNativeTarget "GameInterruptUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9A75B1524AACEA100D6698C /* Debug */,
+				A9A75B1624AACEA100D6698C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A9A75AE024AACEA000D6698C /* Project object */;
+}
