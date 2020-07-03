@@ -376,6 +376,8 @@ namespace GameInterruptLibraryCSCore
 
 		public static bool isExclusiveMode = false; // TODO when does this changes to true?
 
+		public static Dictionary<string, DualShock4Controller> Devices { get { return HidGameControllers.devices; } } // originally a copy of this array was made, not sure why. Concurrency maybe?
+
 		private static Dictionary<string, DualShock4Controller> devices = new Dictionary<string, DualShock4Controller>();
 
 		private static List<HidDevice> disabledDevices = new List<HidDevice>();

@@ -96,7 +96,7 @@ namespace GameInterruptLibraryCSCore
 			this.IsExclusive = isExclusive;
 		}
 
-		public bool ReadFeatureData(byte[] inputBuffer)
+		public bool ReadFeatureData(ref byte[] inputBuffer)
 		{
 			return NativeMethods.HidD_GetFeature(this.SafeReadHandle.DangerousGetHandle(), inputBuffer, inputBuffer.Length);
 		}
@@ -159,6 +159,25 @@ namespace GameInterruptLibraryCSCore
 
 		}
 
+		public void OpenFileStream(int reportSize)
+		{
+			if (this.FileStream == null && !this.SafeReadHandle.IsInvalid)
+			{
+				this.FileStream = new FileStream(this.SafeReadHandle, FileAccess.ReadWrite, reportSize, true);
+			}
+		}
+
+		public bool IsFileStreamOpen()
+		{
+			bool result = false;
+			if (this.FileStream != null)
+			{
+				result = !this.FileStream.SafeFileHandle.IsInvalid && !this.FileStream.SafeFileHandle.IsClosed;
+			}
+
+			return result;
+		}
+
 		public string ReadSerial()
 		{
 			if (this.serial != null)
@@ -166,6 +185,7 @@ namespace GameInterruptLibraryCSCore
 				return this.serial;
 			}
 
+			// FIXME this logic only works for DualShock4
 			// Some devices don't have MAC address (especially gamepads with USB only suports in PC). If the serial number reading fails 
 			// then use dummy zero MAC address, because there is a good chance the gamepad stll works in DS4Windows app (the code would throw
 			// an index out of bounds exception anyway without IF-THEN-ELSE checks after trying to read a serial number).
@@ -173,8 +193,8 @@ namespace GameInterruptLibraryCSCore
 			if (this.Capabilities.InputReportByteLength == 64)
 			{
 				byte[] buffer = new byte[16];
-				buffer[0] = 18;
-				if (this.ReadFeatureData(buffer))
+				buffer[0] = 18; // TODO give a name to this report
+				if (this.ReadFeatureData(ref buffer))
 				{
 					this.serial = String.Format(
 						"{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}",
