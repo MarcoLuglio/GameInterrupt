@@ -84,11 +84,18 @@ namespace GameInterruptLibraryCSCore
 						Global.activeOutDevType[i] = OutContType.None;
 					}*/
 
-					int tempIdx = i;
+
+
+
+
+					/*int tempIdx = i;
 					device.Report += (sender, e) =>
 					{
 						this.On_Report(sender, e, tempIdx);
-					};
+					};*/
+
+
+
 
 					/*DualShock4Controller.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
 					{
@@ -102,8 +109,12 @@ namespace GameInterruptLibraryCSCore
 						device.Report += tempEvnt;
 					}*/
 
-					device.StartUpdate();
-					
+
+
+					// device.StartUpdate(); // TODO constructor already does this
+
+
+
 					/*
 					if (showlog)
 					{

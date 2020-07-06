@@ -46,7 +46,7 @@ namespace GameInterruptLibraryCSCore
 
 					if (HidGameControllers.devicePaths.Contains(tempHidGameController.DevicePath))
 					{
-						continue; // BT/USB endpoint already open once
+						continue; // BT/USB endpoint already opened once
 					}
 
 					if (!tempHidGameController.IsOpen)
@@ -56,7 +56,7 @@ namespace GameInterruptLibraryCSCore
 						{
 							try
 							{
-								// Check if running with elevated permissions
+								// Check if running with elevated permissions // FIXME why check this at each iteration??
 								WindowsIdentity identity = WindowsIdentity.GetCurrent();
 								WindowsPrincipal principal = new WindowsPrincipal(identity);
 								bool elevated = principal.IsInRole(WindowsBuiltInRole.Administrator);
