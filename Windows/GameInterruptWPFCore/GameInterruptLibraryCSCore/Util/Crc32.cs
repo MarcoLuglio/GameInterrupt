@@ -12,27 +12,48 @@ namespace GameInterruptLibraryCSCore.Util
 	{
 
 		// https://docs.microsoft.com/en-us/openspecs/office_protocols/ms-abs/06966aa2-70da-4bf9-8448-3355f277cd77
-		public static UInt32 Checksum(ref byte[] buf, int length) // byte[] was unsigned char*
+
+		/// <summary>
+		/// Implementation according to wikipedia article.
+		/// TODO DS4Windows lists other implementations, I can check later.
+		/// The result of one Compute call needs to be ~ (XOR) before being passed in as the seed for the next compute call
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <param name="bufferLength">
+		/// If we don't want to CRC the enire buffer, specify a length.
+		/// For instance, if the buffer already contains a CRC at the end and we want to generate a CRC of our own to compare with the existing one.
+		/// </param>
+		/// <param name="seed"></param>
+		/// <returns></returns>
+		public static UInt32 Compute(ref byte[] buffer, int bufferLength = 0, UInt32 seed = 0xFFFFFFFF)
 		{
 
-			UInt32 result = 0xFFFFFFFF;
-
-			int index = 0;
-			var crcTableIndex = (result & 0xFF) ^ buf[index]; // what operator is ^? XOR??
-			while (index < length)
+			if (bufferLength == 0)
 			{
-				result = Crc32.crcTable[crcTableIndex] ^ (result >> 8);
-				index++;
+				bufferLength = buffer.Length;
 			}
 
-			result = result ^ 0xFFFFFFFF;
+			var crc32 = seed;
 
-			return result;
+			uint crcTableIndex = 0;
+			byte dataByte;
+			for (var i = 0; i < bufferLength; i++)
+			{
+				dataByte = buffer[i];
+				crcTableIndex = (crc32 ^ dataByte) & 0xFF;
+				crc32 = (crc32 >> 8) ^ Crc32.crcTable[crcTableIndex];
+			}
+
+			//crc32 = crc32 ^ seed; // TODO not sure if it is XOR seed of always 0xffffffff or ~, I'll do what the linux implementation does, which is to not flip anything.
+
+			return crc32;
 
 		}
 
 		/// <summary>
+		/// This is the table for the generator polynomial: 0xedb88320u
 		/// Has 256 values in it
+		/// DS4Windows has an implementation for custom polynomials
 		/// </summary>
 		private static UInt32[] crcTable = {
 			0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
