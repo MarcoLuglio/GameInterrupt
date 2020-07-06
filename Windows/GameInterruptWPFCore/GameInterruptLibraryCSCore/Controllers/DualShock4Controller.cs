@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameInterruptLibraryCSCore.Util;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -28,6 +29,10 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 			return result;
 		}
+
+		public static byte[] BLUETOOTH__HEADER_FOR_CRC32 = { 0xA1 };
+
+		public static byte[] BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32 = { 0xA3 };
 
 		public const int ACC_RES_PER_G = 8192;
 
@@ -70,7 +75,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 			{
 				if (this.connectionType == ConnectionType.Bluetooth)
 				{
-					this.ds4Output = new Thread(this.performDs4Output); // read control input, this method is named in reverse
+					this.ds4Output = new Thread(this.PerformDs4Output); // read control input, this method is named in reverse
 					this.ds4Output.Priority = ThreadPriority.Normal;
 					this.ds4Output.Name = "DS4 Output thread: " + this.macAddress;
 					this.ds4Output.IsBackground = true;
@@ -85,7 +90,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 				else
 				{
 					//this.ds4Output = new Thread(OutReportCopy); // USB, but refactor this later
-					this.ds4Output = new Thread(this.performDs4Output); // read control input, this method is named in reverse
+					this.ds4Output = new Thread(this.PerformDs4Output); // read control input, this method is named in reverse
 					this.ds4Output.Priority = ThreadPriority.Normal;
 					this.ds4Output.Name = "DS4 Arr Copy thread: " + this.macAddress;
 					this.ds4Output.IsBackground = true;
@@ -107,7 +112,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		#region parse report from controller to host (input report)
 
-		public void performDs4Output()
+		public void PerformDs4Output()
 		{
 
 			/*tempStamp = (uint)((ushort)(inputReport[11] << 8) | inputReport[10]);
@@ -153,7 +158,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		}
 
-		public void handleSixaxis(ref byte gyro, ref byte accel, DS4State state, double elapsedDelta)
+		public void HandleSixaxis(ref byte gyro, ref byte accel, /*DS4State state,*/ double elapsedDelta)
 		{
 			/*int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
 			int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
@@ -187,61 +192,88 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		public void RefreshCalibration(HidDevice hidGameController)
 		{
-			var calibration = new byte[41];
+			const int DS4_CALIBRATION_FEATURE_REPORT_HEADER_USB = 0x02;
+			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_USB = 37; // TODO not sure about this
+
+			const int DS4_CALIBRATION_FEATURE_REPORT_HEADER_BLUETOOTH = 0x05;
+			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH = 37;
+			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH_WITH_CRC32 = DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH + 4;
+
+			const byte NUMBER_OF_TRIES = 5;
+
+			var calibrationFeatureReport = new byte[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH_WITH_CRC32];
+			calibrationFeatureReport[0] = DS4_CALIBRATION_FEATURE_REPORT_HEADER_BLUETOOTH;
 
 			if (this.connectionType == ConnectionType.Bluetooth)
 			{
-				calibration[0] = 0x05; // TODO give a name to this report type
-				const int DS4_FEATURE_REPORT_5_LEN = 41;
-				const int DS4_FEATURE_REPORT_5_CRC32_POS = DS4_FEATURE_REPORT_5_LEN - 4;
+				calibrationFeatureReport[0] = DS4_CALIBRATION_FEATURE_REPORT_HEADER_USB;
+			}
 
-				var found = false;
-				for (int tries = 0; !found && tries < 5; tries++)
+			hidGameController.ReadFeatureData(ref calibrationFeatureReport);
+
+			if (this.connectionType == ConnectionType.Bluetooth)
+			{
+	
+				for (int tries = 1; tries < NUMBER_OF_TRIES; tries++) // TODO improve with iterators instead of checking limits
 				{
-					hidGameController.ReadFeatureData(ref calibration);
 
-					// big endian
-					UInt32 recvCrc32 = calibration[DS4_FEATURE_REPORT_5_CRC32_POS] |
-						(UInt32)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 1] << 8) |
-						(UInt32)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 2] << 16) |
-						(UInt32)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 3] << 24);
+					// little endian TODO BitConverter https://docs.microsoft.com/pt-br/dotnet/api/system.bitconverter.toint32?view=netcore-3.1
+					UInt32 reportCrc32 = calibrationFeatureReport[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH]
+						| (UInt32)(calibrationFeatureReport[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH + 1] << 8)
+						| (UInt32)(calibrationFeatureReport[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH + 2] << 16)
+						| (UInt32)(calibrationFeatureReport[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH + 3] << 24);
 
-					var calcCrc32 = ~Crc32Algorithm.Compute(new byte[] { 0xA3 });
-					calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref calibration, 0, DS4_FEATURE_REPORT_5_LEN - 4);
-					var validCrc = false;
-					if (recvCrc32 == calcCrc32)
+					/*
+					// linux line 1628
+					crc = crc32_le(0xFFFFFFFF, DualShock4Controller.BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32, 1);
+					crc = ~ crc32_le(crc, buf, DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH);
+					report_crc = get_unaligned_le32(&buf[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH]);
+
+					// ds4windows
+					var calcCrc32 = ~ Crc32Algorithm.Compute(DualShock4Controller.BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32);
+					calcCrc32 = ~ Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref calibrationFeatureReport, 0, DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH);
+					*/
+
+					var calibrationReportCrc32Seed = Crc32.Compute(
+						ref DualShock4Controller.BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32
+					);
+					var calibrationReportCrc32 = ~ Crc32.Compute( // note the ~ to flip the bits of the result
+						ref calibrationFeatureReport,
+						bufferLength: DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH,
+						seed: calibrationReportCrc32Seed
+					);
+
+					if (reportCrc32 == calibrationReportCrc32)
 					{
-						validCrc = true;
+						break;
 					}
-					if (!validCrc && tries >= 5)
+
+					if (tries >= 5)
 					{
 						System.Diagnostics.Debug.WriteLine("Gyro Calibration Failed"); // TODO show in gui
-						continue;
+						return;
 					}
-					else if (validCrc)
-					{
-						found = true;
-					}
+
+					hidGameController.ReadFeatureData(ref calibrationFeatureReport);
 				}
 
-				this.SetCalibrationData(ref calibration, false);
+				this.SetCalibrationData(ref calibrationFeatureReport, false);
 
-				if (hidGameController.Attributes.ProductId == 0x5C4 && hidGameController.Attributes.VendorId == 0x054C && sixAxis.fixupInvertedGyroAxis())
+				/*if (hidGameController.Attributes.ProductId == 0x5C4 && hidGameController.Attributes.VendorId == 0x054C && sixAxis.fixupInvertedGyroAxis())
 				{
 					System.Diagnostics.Debug.WriteLine($"Automatically fixed inverted YAW gyro axis in DS4 v.1 BT gamepad ({this.macAddress})");
-				}
+				}*/
 
 			}
-			else
-			{
-				calibration[0] = 0x02; // TODO give a name to this report type
-				hidGameController.ReadFeatureData(ref calibration);
-				this.SetCalibrationData(ref calibration, true);
-			}
+
+			this.SetCalibrationData(
+				ref calibrationFeatureReport,
+				this.connectionType == ConnectionType.Usb
+			);
 
 		}
 
-		private void applyCalibs(
+		private void ApplyCalibs(
 			ref int yaw, ref int pitch, ref int roll,
 			ref int accelX, ref int accelY, ref int accelZ
 		) {
