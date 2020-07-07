@@ -44,25 +44,20 @@ namespace GameInterruptLibraryCSCore.Controllers
 		{
 
 			// TODO
-
-			this.connectionType = HidConnectionType(hidGameController);
-			this.macAddress = hidGameController.ReadSerial(); // TODO rename this so it is clearer
+			this.hidGameController = hidGameController;
+			this.connectionType = HidConnectionType(this.hidGameController);
+			this.macAddress = this.hidGameController.ReadSerial(); // TODO rename this so it is clearer
 			this.ExitOutputThread = false;
 
-			/*if (runCalib) // TODO why would we not want to calibrate?
+			if (!this.hidGameController.IsFileStreamOpen())
 			{
-				RefreshCalibration();
-			}*/
-
-			this.RefreshCalibration(hidGameController);
-
-			if (!hidGameController.IsFileStreamOpen())
-			{
-				hidGameController.OpenFileStream(hidGameController.Capabilities.InputReportByteLength); // TODO check if this changes when in Bluetooth or USB
+				this.hidGameController.OpenFileStream(this.hidGameController.Capabilities.InputReportByteLength); // TODO check if this changes when in Bluetooth or USB
 			}
 
-			//sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
+			// TODO give the option to skip calibration if we are not interested in gyro events...
+			this.RefreshCalibration(this.hidGameController);
 
+			// sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
 			this.StartUpdate();
 
 		}
@@ -71,15 +66,15 @@ namespace GameInterruptLibraryCSCore.Controllers
 		{
 			//this.inputReportErrorCount = 0;
 
-			if (ds4Input == null)
+			if (this.inputReportThread == null)
 			{
 				if (this.connectionType == ConnectionType.Bluetooth)
 				{
-					this.ds4Output = new Thread(this.PerformDs4Output); // read control input, this method is named in reverse
-					this.ds4Output.Priority = ThreadPriority.Normal;
-					this.ds4Output.Name = "DS4 Output thread: " + this.macAddress;
-					this.ds4Output.IsBackground = true;
-					this.ds4Output.Start();
+					this.outputReportThread = new Thread(this.PerformDs4Output);
+					this.outputReportThread.Priority = ThreadPriority.Normal;
+					this.outputReportThread.Name = "DS4 Output thread: " + this.macAddress;
+					this.outputReportThread.IsBackground = true;
+					this.outputReportThread.Start();
 
 					/*timeoutCheckThread = new Thread(TimeoutTestThread);
 					timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
@@ -90,18 +85,18 @@ namespace GameInterruptLibraryCSCore.Controllers
 				else
 				{
 					//this.ds4Output = new Thread(OutReportCopy); // USB, but refactor this later
-					this.ds4Output = new Thread(this.PerformDs4Output); // read control input, this method is named in reverse
-					this.ds4Output.Priority = ThreadPriority.Normal;
-					this.ds4Output.Name = "DS4 Arr Copy thread: " + this.macAddress;
-					this.ds4Output.IsBackground = true;
-					this.ds4Output.Start();
+					this.outputReportThread = new Thread(this.PerformDs4Output);
+					this.outputReportThread.Priority = ThreadPriority.Normal;
+					this.outputReportThread.Name = "DS4 Arr Copy thread: " + this.macAddress;
+					this.outputReportThread.IsBackground = true;
+					this.outputReportThread.Start();
 				}
 
-				/*this.ds4Input = new Thread(this.performDs4Input);
-				this.ds4Input.Priority = ThreadPriority.AboveNormal;
-				this.ds4Input.Name = "DS4 Input thread: " + Mac;
-				this.ds4Input.IsBackground = true;
-				this.ds4Input.Start();*/
+				this.inputReportThread = new Thread(this.PerformDs4Input);
+				this.inputReportThread.Priority = ThreadPriority.AboveNormal;
+				this.inputReportThread.Name = "DS4 Input thread: " + this.macAddress;
+				this.inputReportThread.IsBackground = true;
+				this.inputReportThread.Start();
 			}
 			else
 			{
@@ -111,6 +106,215 @@ namespace GameInterruptLibraryCSCore.Controllers
 		}
 
 		#region parse report from controller to host (input report)
+
+		public void PerformDs4Input()
+		{
+
+			var bluetoothOffset = this.connectionType == ConnectionType.Bluetooth ? 2 : 0;
+
+			try
+			{
+				while (!this.ExitInputThread)
+				{
+
+					var report = new byte[64];
+					var success = this.hidGameController.ReadWithFileStream(report);
+
+					if (!success)
+					{
+						Thread.Sleep(100);
+						continue; // TODO I should give a timeout
+					}
+
+					// TODO check how this looks like for USB and probably there's a better way to poll this data
+					if (report[0] == 0 || report[0] == 128)
+					{
+						continue;
+					}
+
+					this.mainButtons = report[5 + bluetoothOffset];
+
+					this.triangleButton = (this.mainButtons & 0b10000000) == 0b10000000;
+					this.circleButton = (this.mainButtons & 0b01000000) == 0b01000000;
+					this.squareButton = (this.mainButtons & 0b00010000) == 0b00010000;
+					this.crossButton = (this.mainButtons & 0b00100000) == 0b00100000;
+
+					this.directionalPad = (byte)(this.mainButtons & 0b00001111); // TODO check if this cast works as expected
+					/*
+					this.upButton: (this.directionalPad == 0 || this.directionalPad == 1 || this.directionalPad == 7),
+					this.rightButton: (this.directionalPad == 2 || this.directionalPad == 1 || this.directionalPad == 3),
+					this.downButton: (this.directionalPad == 4 || this.directionalPad == 3 || this.directionalPad == 5),
+					this.leftButton: (this.directionalPad == 6 || this.directionalPad == 5 || this.directionalPad == 7),
+					*/
+
+					this.secondaryButtons = report[6 + bluetoothOffset];
+
+					this.l1 = (this.secondaryButtons & 0b00000001) == 0b00000001;
+					this.r1 = (this.secondaryButtons & 0b00000010) == 0b00000010;
+					this.l2 = (this.secondaryButtons & 0b00000100) == 0b00000100;
+					this.r2 = (this.secondaryButtons & 0b00001000) == 0b00001000;
+
+					this.l3 = (this.secondaryButtons & 0b01000000) == 0b01000000;
+					this.r3 = (this.secondaryButtons & 0b10000000) == 0b10000000;
+
+					this.shareButton = (this.secondaryButtons & 0b00010000) == 0b00010000;
+					this.optionsButton = (this.secondaryButtons & 0b00100000) == 0b00100000;
+
+					this.psButton = (report[7 + bluetoothOffset] & 0b00000001) == 0b00000001;
+
+					this.reportIterator = (byte)(report[7 + bluetoothOffset] >> 2); // [7] 	Counter (counts up by 1 per report), I guess this is only relevant to bluetooth
+
+					if (this.previousMainButtons != this.mainButtons
+						|| this.previousSecondaryButtons != this.secondaryButtons
+						|| this.previousPsButton != this.psButton
+						|| this.previousTrackpadButton != this.trackpadButton
+						) {
+
+						System.Diagnostics.Debug.WriteLine($"square: {this.squareButton}");
+
+						/*DispatchQueue.main.async {
+							NotificationCenter.default.post(
+								name: GamePadButtonChangedNotification.Name,
+								object: GamePadButtonChangedNotification(
+									leftTriggerButton: self.l2,
+									leftShoulderButton: self.l1,
+									minusButton: false,
+									leftSideTopButton: false,
+									leftSideBottomButton: false,
+									upButton: (self.directionalPad == 0 || self.directionalPad == 1 || self.directionalPad == 7),
+									rightButton: (self.directionalPad == 2 || self.directionalPad == 1 || self.directionalPad == 3),
+									downButton: (self.directionalPad == 4 || self.directionalPad == 3 || self.directionalPad == 5),
+									leftButton: (self.directionalPad == 6 || self.directionalPad == 5 || self.directionalPad == 7),
+									socialButton: self.shareButton,
+									leftStickButton: self.l3,
+									trackPadButton: self.trackpadButton,
+									centralButton: self.psButton,
+									rightStickButton: self.r3,
+									rightAuxiliaryButton: self.optionsButton,
+									faceNorthButton: self.triangleButton,
+									faceEastButton: self.circleButton,
+									faceSouthButton: self.crossButton,
+									faceWestButton: self.squareButton,
+									rightSideBottomButton: false,
+									rightSideTopButton: false,
+									plusButton: false,
+									rightShoulderButton: self.r1,
+									rightTriggerButton: self.r2
+								)
+							)
+						}*/
+
+						this.previousMainButtons = this.mainButtons;
+
+						this.previousSquareButton = this.squareButton;
+						this.previousCrossButton = this.crossButton;
+						this.previousCircleButton = this.circleButton;
+						this.previousTriangleButton = this.triangleButton;
+
+						this.previousDirectionalPad = this.directionalPad;
+
+						this.previousSecondaryButtons = this.secondaryButtons;
+
+						this.previousL1 = this.l1;
+						this.previousR1 = this.r1;
+						this.previousL2 = this.l2;
+						this.previousR2 = this.r2;
+						this.previousL3 = this.l3;
+						this.previousR3 = this.r3;
+
+						this.previousShareButton = this.shareButton;
+						this.previousOptionsButton = this.optionsButton;
+
+						this.previousPsButton = this.psButton;
+						this.previousTrackpadButton = this.trackpadButton;
+
+					}
+
+					// analog buttons
+					// origin left top
+					this.leftStickX = report[1 + bluetoothOffset]; // 0 left
+					this.leftStickY = report[2 + bluetoothOffset]; // 0 up
+					this.rightStickX = report[3 + bluetoothOffset];
+					this.rightStickY = report[4 + bluetoothOffset];
+					this.leftTrigger = report[8 + bluetoothOffset]; // 0 - 255
+					this.rightTrigger = report[9 + bluetoothOffset]; // 0 - 255
+
+					if (this.previousLeftStickX != this.leftStickX
+						|| this.previousLeftStickY != this.leftStickY
+						|| this.previousRightStickX != this.rightStickX
+						|| this.previousRightStickY != this.rightStickY
+						|| this.previousLeftTrigger != this.leftTrigger
+						|| this.previousRightTrigger != this.rightTrigger
+						) {
+
+						/*DispatchQueue.main.async {
+							NotificationCenter.default.post(
+								name: GamePadAnalogChangedNotification.Name,
+								object: GamePadAnalogChangedNotification(
+									leftStickX: Int16(this.leftStickX),
+									leftStickY: Int16(this.leftStickY),
+									rightStickX: Int16(this.rightStickX),
+									rightStickY: Int16(this.rightStickY),
+									leftTrigger: this.leftTrigger,
+									rightTrigger: this.rightTrigger
+								)
+							)
+						}*/
+
+						this.previousLeftStickX = this.leftStickX;
+						this.previousLeftStickY = this.leftStickY;
+						this.previousRightStickX = this.rightStickX;
+						this.previousRightStickY = this.rightStickY;
+						this.previousLeftTrigger = this.leftTrigger;
+						this.previousRightTrigger = this.rightTrigger;
+
+					}
+
+					// trackpad
+
+					this.trackpadButton = (report[7 + bluetoothOffset] & 0b00000010) == 0b00000010;
+
+				}
+			}
+			catch (ThreadInterruptedException ex)
+			{
+				// TODO
+			}
+
+		}
+
+		public void HandleSixaxis(ref byte gyro, ref byte accel, /*DS4State state,*/ double elapsedDelta)
+		{
+			/*int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
+			int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
+			int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
+			int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
+			int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
+			int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
+
+			if (calibrationDone)
+				applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
+
+			SixAxisEventArgs args = null;
+			if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
+			{
+				if (SixAccelMoved != null)
+				{
+					sPrev.copy(now);
+					now.populate(currentYaw, currentPitch, currentRoll,
+						AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
+
+					args = new SixAxisEventArgs(state.ReportTimeStamp, now);
+					state.Motion = now;
+					SixAccelMoved(this, args);
+				}
+			}*/
+		}
+
+		#endregion
+
+
+		#region send report from host to controller (output report)
 
 		public void PerformDs4Output()
 		{
@@ -156,34 +360,64 @@ namespace GameInterruptLibraryCSCore.Controllers
 				sixAxis.handleSixaxis(ref pbGyro, ref pbAccel, cState, elapsedDeltaTime);
 			}*/
 
-		}
-
-		public void HandleSixaxis(ref byte gyro, ref byte accel, /*DS4State state,*/ double elapsedDelta)
-		{
-			/*int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
-			int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
-			int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
-			int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
-			int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
-			int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
-
-			if (calibrationDone)
-				applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
-
-			SixAxisEventArgs args = null;
-			if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
+			try
 			{
-				if (SixAccelMoved != null)
+				while (!this.ExitOutputThread)
 				{
-					sPrev.copy(now);
-					now.populate(currentYaw, currentPitch, currentRoll,
-						AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
+					/*if (currentRumble)
+					{
+						lock (outputReport)
+						{
+							result = writeOutput();
+						}
 
-					args = new SixAxisEventArgs(state.ReportTimeStamp, now);
-					state.Motion = now;
-					SixAccelMoved(this, args);
+						currentRumble = false;
+						if (!result)
+						{
+							currentRumble = true;
+							exitOutputThread = true;
+							int thisError = Marshal.GetLastWin32Error();
+							if (lastError != thisError)
+							{
+								Console.WriteLine(Mac.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "> encountered write failure: " + thisError);
+								//Log.LogToGui(Mac.ToString() + " encountered write failure: " + thisError, true);
+								lastError = thisError;
+							}
+						}
+					}
+
+					if (!currentRumble)
+					{
+						lastError = 0;
+						lock (outReportBuffer)
+						{
+							Monitor.Wait(outReportBuffer);
+							fixed (byte* byteR = outputReport, byteB = outReportBuffer)
+							{
+								for (int i = 0, arlen = BT_OUTPUT_CHANGE_LENGTH; i < arlen; i++)
+									byteR[i] = byteB[i];
+							}
+							//outReportBuffer.CopyTo(outputReport, 0);
+							if (outputPendCount > 1)
+								outputPendCount--;
+							else if (outputPendCount == 1)
+							{
+								outputPendCount--;
+								standbySw.Restart();
+							}
+							else
+								standbySw.Restart();
+						}
+
+						currentRumble = true;
+					}*/
 				}
-			}*/
+			}
+			catch (ThreadInterruptedException ex)
+			{
+				// TODO
+			}
+
 		}
 
 		#endregion
@@ -207,9 +441,12 @@ namespace GameInterruptLibraryCSCore.Controllers
 			if (this.connectionType == ConnectionType.Bluetooth)
 			{
 				calibrationFeatureReport[0] = DS4_CALIBRATION_FEATURE_REPORT_HEADER_USB;
+				hidGameController.ReadFeatureData(ref calibrationFeatureReport);
 			}
-
-			hidGameController.ReadFeatureData(ref calibrationFeatureReport);
+			else
+			{
+				hidGameController.ReadFeatureData(ref calibrationFeatureReport, DS4_CALIBRATION_FEATURE_REPORT_LEN_USB);
+			}
 
 			if (this.connectionType == ConnectionType.Bluetooth)
 			{
@@ -243,6 +480,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 						seed: calibrationReportCrc32Seed
 					);
 
+					break; // FIXME figure out which bytes are the CRC validation, the last ones are all 0
 					if (reportCrc32 == calibrationReportCrc32)
 					{
 						break;
@@ -256,8 +494,6 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 					hidGameController.ReadFeatureData(ref calibrationFeatureReport);
 				}
-
-				this.SetCalibrationData(ref calibrationFeatureReport, false);
 
 				/*if (hidGameController.Attributes.ProductId == 0x5C4 && hidGameController.Attributes.VendorId == 0x054C && sixAxis.fixupInvertedGyroAxis())
 				{
@@ -386,20 +622,6 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		}
 
-		#endregion
-
-		// public event ReportHandler<EventArgs> Report = null; // TODO not sure I'll do this with events, probably a queue
-
-		public bool ExitOutputThread
-		{
-			get;
-			private set;
-		}
-
-		private ConnectionType connectionType;
-
-		private string macAddress;
-
 		private Calibration[] calibration = {
 			new Calibration(),
 			new Calibration(),
@@ -411,11 +633,151 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		private bool calibrationDone = false;
 
-		private Thread ds4Output;
+		#endregion
 
-		private Thread ds4Input;
+		// public event ReportHandler<EventArgs> Report = null; // TODO not sure I'll do this with events, probably a queue
 
-		private Thread timeoutCheckThread;
+		private HidDevice hidGameController; // TODO maybe make this readonly
+
+		private ConnectionType connectionType;
+
+		private string macAddress;
+
+		#region input and output reports
+
+		private Thread inputReportThread;
+
+		public bool ExitInputThread
+		{
+			get;
+			private set;
+		}
+
+		private Thread outputReportThread;
+
+		public bool ExitOutputThread
+		{
+			get;
+			private set;
+		}
+
+		//private Thread timeoutCheckThread;
+
+		/// contains triangle, circle, cross, square and directional pad buttons
+		byte mainButtons = 0;
+		byte previousMainButtons = 8; // dpad neutral position is 8
+
+		// top button
+		bool triangleButton = false;
+		bool previousTriangleButton = false;
+
+		// right button
+		bool circleButton = false;
+		bool previousCircleButton = false;
+
+		// bottom button
+		bool crossButton = false;
+		bool previousCrossButton = false;
+
+		// left button
+		bool squareButton = false;
+		bool previousSquareButton = false;
+
+		byte directionalPad = 0;
+		byte previousDirectionalPad = 0;
+
+		/// contains the shoulder buttons, triggers (digital input), thumbstick buttons, share and options buttons
+		byte secondaryButtons = 0;
+		byte previousSecondaryButtons = 0;
+
+		// shoulder buttons
+		bool l1 = false;
+		bool previousL1 = false;
+		bool r1 = false;
+		bool previousR1 = false;
+		/// digital reading for left trigger
+		/// for the analog reading see leftTrigger
+		bool l2 = false;
+		bool previousL2 = false;
+		/// digital reading for right trigger
+		/// for the analog reading see rightTrigger
+		bool r2 = false;
+		bool previousR2 = false;
+
+		// thumbstick buttons
+		bool l3 = false;
+		bool previousL3 = false;
+		bool r3 = false;
+		bool previousR3 = false;
+
+		// other buttons
+
+		bool shareButton = false;
+		bool previousShareButton = false;
+		bool optionsButton = false;
+		bool previousOptionsButton = false;
+
+		bool psButton = false;
+		bool previousPsButton = false;
+
+		// analog buttons
+
+		byte leftStickX = 0; // TODO transform to Int16 because of xbox? or do this in the notification?
+		byte previousLeftStickX = 0;
+		byte leftStickY = 0;
+		byte previousLeftStickY = 0;
+		byte rightStickX = 0;
+		byte previousRightStickX = 0;
+		byte rightStickY = 0;
+		byte previousRightStickY = 0;
+
+		byte leftTrigger = 0;
+		byte previousLeftTrigger = 0;
+		byte rightTrigger = 0;
+		byte previousRightTrigger = 0;
+
+		// trackpad
+
+		bool trackpadButton = false;
+		bool previousTrackpadButton = false;
+
+		bool trackpadTouch0IsActive = false;
+		bool previousTrackpadTouch0IsActive = false;
+		byte trackpadTouch0Id = 0;
+		byte trackpadTouch0X = 0;
+		byte trackpadTouch0Y = 0;
+
+		bool trackpadTouch1IsActive = false;
+		bool previousTrackpadTouch1IsActive = false;
+		byte trackpadTouch1Id = 0;
+		byte trackpadTouch1X = 0;
+		byte trackpadTouch1Y = 0;
+
+		// inertial measurement unit
+
+		float gyroX = 0;
+		float gyroY = 0;
+		float gyroZ = 0;
+
+		float accelX = 0;
+		float accelY = 0;
+		float accelZ = 0;
+
+		float rotationZ = 0;
+
+		// battery
+
+		bool cableConnected = false;
+		bool batteryCharging = false;
+		byte batteryLevel = 0; // 0 to 9 on USB, 0 - 10 on Bluetooth
+		byte previousBatteryLevel = 0;
+
+		// misc
+
+		byte reportIterator = 0;
+		byte previousReportIterator = 0;
+
+		#endregion
 
 	}
 
@@ -427,7 +789,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 		Bluetooth
 	};
 
-	// TODO make this a truct maybe?
+	// TODO make this a struct maybe?
 	internal class Calibration
 	{
 		public const int GyroPitchIndex = 0;
