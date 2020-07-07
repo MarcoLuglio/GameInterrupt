@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 
@@ -47,21 +48,43 @@ namespace GameInterruptLibraryCSCore
 			return hidHandle;
 		}
 
+		private static HidDeviceAttributes GetDeviceAttributes(SafeFileHandle hidHandle)
+		{
+			var deviceAttributes = default(NativeMethods.HIDD_ATTRIBUTES);
+			deviceAttributes.Size = Marshal.SizeOf(deviceAttributes);
+			NativeMethods.HidD_GetAttributes(hidHandle.DangerousGetHandle(), ref deviceAttributes);
+			return new HidDeviceAttributes(deviceAttributes);
+		}
+
+		private static HidDeviceCapabilities GetDeviceCapabilities(SafeFileHandle hidHandle)
+		{
+			var capabilities = default(NativeMethods.HIDP_CAPS);
+			var preparsedDataPointer = default(IntPtr);
+
+			if (NativeMethods.HidD_GetPreparsedData(hidHandle.DangerousGetHandle(), ref preparsedDataPointer))
+			{
+				NativeMethods.HidP_GetCaps(preparsedDataPointer, ref capabilities);
+				NativeMethods.HidD_FreePreparsedData(preparsedDataPointer);
+			}
+
+			return new HidDeviceCapabilities(capabilities);
+		}
+
 		public const string blankSerial = "00:00:00:00:00:00";
 
 		#endregion
 
 		internal HidDevice(string devicePath, string description = null)
 		{
-			this.devicePath = devicePath;
-			this.description = description;
+			this.DevicePath = devicePath;
+			this.Description = description;
 
 			try
 			{
-				var hidHandle = OpenHandle(this.devicePath, isExclusive: false, enumerate: true);
+				var hidHandle = OpenHandle(this.DevicePath, isExclusive: false, enumerate: true);
 
-				// this.deviceAttributes = GetDeviceAttributes(hidHandle);
-				// this.deviceCapabilities = GetDeviceCapabilities(hidHandle);
+				this.Attributes = GetDeviceAttributes(hidHandle);
+				this.Capabilities = GetDeviceCapabilities(hidHandle);
 
 				hidHandle.Close();
 			}
@@ -83,7 +106,7 @@ namespace GameInterruptLibraryCSCore
 			{
 				if (this.SafeReadHandle == null || this.SafeReadHandle.IsInvalid)
 				{
-					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive, enumerate: false);
+					this.SafeReadHandle = OpenHandle(this.DevicePath, isExclusive, enumerate: false);
 				}
 			}
 			catch (Exception exception)
@@ -96,10 +119,48 @@ namespace GameInterruptLibraryCSCore
 			this.IsExclusive = isExclusive;
 		}
 
-		public bool ReadFeatureData(ref byte[] inputBuffer)
+		public bool ReadFeatureData(ref byte[] inputBuffer, int bufferLength = 0)
 		{
-			return NativeMethods.HidD_GetFeature(this.SafeReadHandle.DangerousGetHandle(), inputBuffer, inputBuffer.Length);
+			if (bufferLength == 0)
+			{
+				bufferLength = inputBuffer.Length;
+			}
+
+			return NativeMethods.HidD_GetFeature(this.SafeReadHandle.DangerousGetHandle(), inputBuffer, bufferLength);
 		}
+
+		public bool /*ReadStatus*/ ReadWithFileStream(byte[] inputBuffer)
+		{
+			// FIXME read this properly later
+			try
+			{
+				if (this.FileStream.Read(inputBuffer, 0, inputBuffer.Length) > 0)
+				{
+					return true; // ReadStatus.Success;
+				}
+				else
+				{
+					return false; // ReadStatus.NoDataRead;
+				}
+			}
+			catch (Exception) // FIXME this happens a lot. I'm probably calling this at a rate that is too fast, or this is a data race because I'm not locking the threads
+			{
+				System.Diagnostics.Debug.WriteLine("Exception when trying to read input report");
+				return false; // ReadStatus.ReadError;
+			}
+		}
+
+		public bool WriteOutputReportViaControl(byte[] outputBuffer)
+		{
+			if (this.SafeReadHandle == null)
+			{
+				this.SafeReadHandle = OpenHandle(this.DevicePath, isExclusive: true, enumerate: false);
+			}
+
+			return NativeMethods.HidD_SetOutputReport(this.SafeReadHandle, outputBuffer, outputBuffer.Length);
+		}
+
+		// TODO refactor this, the checks are the same, the only difference is this.FileStream.Write vc this.FileStream.WriteAsync
 
 		public bool WriteOutputReportViaInterrupt(byte[] outputBuffer, int timeout)
 		{
@@ -107,7 +168,7 @@ namespace GameInterruptLibraryCSCore
 			{
 				if (this.SafeReadHandle == null)
 				{
-					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
+					this.SafeReadHandle = OpenHandle(this.DevicePath, isExclusive: true, enumerate: false);
 				}
 				if (this.FileStream == null && !this.SafeReadHandle.IsInvalid)
 				{
@@ -136,7 +197,7 @@ namespace GameInterruptLibraryCSCore
 			{
 				if (this.SafeReadHandle == null)
 				{
-					this.SafeReadHandle = OpenHandle(this.devicePath, isExclusive: true, enumerate: false);
+					this.SafeReadHandle = OpenHandle(this.DevicePath, isExclusive: true, enumerate: false);
 				}
 				if (this.FileStream == null && !this.SafeReadHandle.IsInvalid)
 				{
@@ -144,7 +205,7 @@ namespace GameInterruptLibraryCSCore
 				}
 				if (this.FileStream != null && this.FileStream.CanWrite && !this.SafeReadHandle.IsInvalid)
 				{
-					Task writeTask = this.FileStream.WriteAsync(outputBuffer, 0, outputBuffer.Length);
+					Task writeTask = this.FileStream.WriteAsync(outputBuffer, 0, outputBuffer.Length); // TODO why not call await? Not sure if this methid is used in DS4Windows
 					return true;
 				}
 				else
@@ -238,7 +299,9 @@ namespace GameInterruptLibraryCSCore
 					// Substring: \\?\hid#vid_054c&pid_09cc&mi_03#7&1f882A25&0&0001#{4d1e55b2-f16f-11cf-88cb-001111000030} -> \\?\hid#vid_054c&pid_09cc&mi_03#7&1f882A25&0&0001#
 					int endPos = this.DevicePath.LastIndexOf('{');
 					if (endPos < 0)
+					{
 						endPos = this.DevicePath.Length;
+					}
 
 					// String array: \\?\hid#vid_054c&pid_09cc&mi_03#7&1f882A25&0&0001# -> [0]=\\?\hidvid_054c, [1]=pid_09cc, [2]=mi_037, [3]=1f882A25, [4]=0, [5]=0001
 					string[] devPathItems = this.DevicePath.Substring(0, endPos).Replace("#", "").Replace("-", "").Replace("{", "").Replace("}", "").Split('&');
@@ -288,17 +351,13 @@ namespace GameInterruptLibraryCSCore
 
 		public FileStream FileStream { get; private set; }
 
-		public string Description { get { return this.description; } }
+		public string Description { get; private set; }
 
-		public string DevicePath { get { return this.devicePath; } }
+		public string DevicePath { get; private set; }
 
-		public HidDeviceAttributes Attributes { get; }
+		public HidDeviceAttributes Attributes { get; private set; }
 
-		public HidDeviceCapabilities Capabilities { get; }
-
-		private readonly string description;
-
-		private readonly string devicePath;
+		public HidDeviceCapabilities Capabilities { get; private set; }
 
 		private string serial = null;
 
