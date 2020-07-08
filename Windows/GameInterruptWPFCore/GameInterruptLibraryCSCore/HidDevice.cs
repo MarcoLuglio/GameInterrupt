@@ -134,7 +134,9 @@ namespace GameInterruptLibraryCSCore
 			// FIXME read this properly later
 			try
 			{
-				if (this.FileStream.Read(inputBuffer, 0, inputBuffer.Length) > 0)
+				var reportLength = this.FileStream.Read(inputBuffer, 0, inputBuffer.Length);
+				System.Diagnostics.Debug.WriteLine($"report length: {reportLength}");
+				if (reportLength > 0)
 				{
 					return true; // ReadStatus.Success;
 				}
