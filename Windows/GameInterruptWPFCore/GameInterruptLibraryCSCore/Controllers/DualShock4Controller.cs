@@ -34,7 +34,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		public static byte[] BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32 = { 0xA3 };
 
-		public const int ACC_RES_PER_G = 8192;
+		public const int ACC_RES_PER_G = 8192; // TODO means 1G is 8192 (1 and a half byte) 0b0000_0000_0000 ??
 
 		public const int GYRO_RES_IN_DEG_SEC = 16;
 
@@ -54,8 +54,10 @@ namespace GameInterruptLibraryCSCore.Controllers
 				this.hidGameController.OpenFileStream(this.hidGameController.Capabilities.InputReportByteLength); // TODO check if this changes when in Bluetooth or USB
 			}
 
+			System.Diagnostics.Debug.WriteLine($" input report length: {this.hidGameController.Capabilities.InputReportByteLength}");
+
 			// TODO give the option to skip calibration if we are not interested in gyro events...
-			this.RefreshCalibration(this.hidGameController);
+			//this.RefreshCalibration(this.hidGameController);
 
 			// sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
 			this.StartUpdate();
@@ -68,7 +70,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 			if (this.inputReportThread == null)
 			{
-				if (this.connectionType == ConnectionType.Bluetooth)
+				/*if (this.connectionType == ConnectionType.Bluetooth)
 				{
 					this.outputReportThread = new Thread(this.PerformDs4Output);
 					this.outputReportThread.Priority = ThreadPriority.Normal;
@@ -80,7 +82,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 					timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
 					timeoutCheckThread.Name = "DS4 Timeout thread: " + this.macAddress;
 					timeoutCheckThread.IsBackground = true;
-					timeoutCheckThread.Start();*/
+					timeoutCheckThread.Start();* /
 				}
 				else
 				{
@@ -90,10 +92,11 @@ namespace GameInterruptLibraryCSCore.Controllers
 					this.outputReportThread.Name = "DS4 Arr Copy thread: " + this.macAddress;
 					this.outputReportThread.IsBackground = true;
 					this.outputReportThread.Start();
-				}
+				}*/
 
 				this.inputReportThread = new Thread(this.PerformDs4Input);
-				this.inputReportThread.Priority = ThreadPriority.AboveNormal;
+				//this.inputReportThread.Priority = ThreadPriority.AboveNormal;
+				this.inputReportThread.Priority = ThreadPriority.Normal;
 				this.inputReportThread.Name = "DS4 Input thread: " + this.macAddress;
 				this.inputReportThread.IsBackground = true;
 				this.inputReportThread.Start();
@@ -111,35 +114,134 @@ namespace GameInterruptLibraryCSCore.Controllers
 		{
 
 			var bluetoothOffset = this.connectionType == ConnectionType.Bluetooth ? 2 : 0;
+			NativeMethods.HidD_SetNumInputBuffers(this.hidGameController.SafeReadHandle.DangerousGetHandle(), 2); // TODO check what this does
 
 			try
 			{
 				while (!this.ExitInputThread)
 				{
 
-					var report = new byte[64];
+					readWaitEv.Set();
+
+					var report = new byte[this.hidGameController.Capabilities.InputReportByteLength]; // it is 500+, but this is only used when audio is transmitted, the actual values are 64 for buttons I think
 					var success = this.hidGameController.ReadWithFileStream(report);
 
+					readWaitEv.Wait();
+					readWaitEv.Reset();
+
+					// TODO check how this looks like for USB and probably there's a better way to poll this data
 					if (!success)
 					{
 						Thread.Sleep(100);
-						continue; // TODO I should give a timeout
+						continue; // TODO I should give a timeout?
 					}
 
-					// TODO check how this looks like for USB and probably there's a better way to poll this data
-					if (report[0] == 0 || report[0] == 128)
+					Thread.Sleep(100); // TODO for debugging purposes only
+
+					/*
+					usb
+					====
+
+					report[0] 0000_0001 *3 0x01 1 report protocol
+
+					bluetooth
+					=========
+
+					report[0] 0001_0001 0x17 23 not in HID descriptor, but could be 0x01 or 0x11 too?
+
+					report[1] 1100_0000 0xC0 192 | 0b10000_0000 is hid | 0b0100_0000 contains CRC | 0b0011_1111 bluetooth reporting interval, see table below
+					report[2] 0000_0000 *3 0x00 0
+
+
+					bluetooth with IMU
+					==================
+
+					report[0] 0001_0001 bt only 0x17 23 not in HID descriptor, but could be 0x11 too??
+
+					report[1] 1100_0000 bt only 0xC0 192 | 0b10000_0000 is hid | 0b0100_0000 contains CRC | 0b0011_1111 bluetooth reporting interval, see table below
+					report[2] 0000_0000 *3 0x00 0
+
+					// note from DS4Windows
+					// If the incoming data packet doesn't have the native DS4 type (0x11) in BT mode then the gamepad sends PC-friendly 0x01 data packets even in BT mode. Switch over to accept 0x01 data packets in BT mode.
+
+					// note 2 from DS4Windows, but for a different report, not sure it it applies here
+					The lower 6 bits of report[1] field of the Bluetooth report
+					control the interval at which Dualshock 4 reports data:
+					0x00 - 1ms
+					0x01 - 1ms
+					0x02 - 2ms
+					0x3E - 62ms
+					0x3F - disabled
+
+					// Note from linux DS4 driver
+					The default behavior of the Dualshock 4 is to send reports using report type 1 when running over Bluetooth. However, when feature
+					report 2 is requested during the controller initialization it starts sending input reports in report 17. Since report 17 is undefined
+					in the default HID descriptor, the HID layer won't generate events. While it is possible (and this was done before) to fixup the HID
+					descriptor to add this mapping, it was better to do this manually. The reason is there were various pieces software both open and closed
+					source, relying on the descriptors to be the same across various operating systems. If the descriptors wouldn't match some
+					applications e.g. games on Wine would not be able to function due to different descriptors, which such applications are not parsing.
+					*/
+
+					// TODO put the constants somewhere else
+
+					const byte REPORT_PROTOCOL_INPUT_SIMPLE = 0x01; // 0b0000_0001
+					const byte REPORT_PROTOCOL_INPUT_IMU_11 = 0x11; // 0b0001_0001
+					const byte REPORT_PROTOCOL_INPUT_IMU_17 = 0x17; // 0b0001_0001
+
+					var reportProtocol = report[0];
+					System.Diagnostics.Debug.WriteLine($"report protocol {Convert.ToString(reportProtocol, 2).PadLeft(8, '0')}");
+					if (reportProtocol != REPORT_PROTOCOL_INPUT_SIMPLE
+						&& reportProtocol != REPORT_PROTOCOL_INPUT_IMU_11
+						&& reportProtocol != REPORT_PROTOCOL_INPUT_IMU_17
+						)
 					{
 						continue;
 					}
 
+					/*switch (reportProtocol)
+					{
+
+						case REPORT_PROTOCOL_INPUT_SIMPLE:
+							// check CRC of 10, 11, 12 and 13? // could't get this simple report
+							var calibrationReportCrc32Seed = Crc32.Compute(
+								ref DualShock4Controller.BLUETOOTH_CALIBRATION_HEADER_FOR_CRC32
+							);
+							var calibrationReportCrc32 = ~ Crc32.Compute( // note the ~ to flip the bits of the result
+								ref calibrationFeatureReport,
+								bufferLength: DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH,
+								seed: calibrationReportCrc32Seed
+							);
+							break;
+
+						case REPORT_PROTOCOL_INPUT_IMU_11:
+							// fallthrough
+						case REPORT_PROTOCOL_INPUT_IMU_17:
+							// check CRC of 60, 61, 62 and 63 ??
+							break;
+
+						default:
+							continue; // will continue act on the switch or loop? do I need
+
+					}*/
+
+					UInt32 reportCrc32 = report[10]
+						| (UInt32)(report[11] << 8)
+						| (UInt32)(report[12] << 16)
+						| (UInt32)(report[13] << 24);
+
+					var inputSimpleReportCrc32 = ~Crc32.Compute( // note the ~ to flip the bits of the result
+						ref report,
+						bufferLength: 10 //DS4_INPUT_SIMPLE_REPORT_LEN_BLUETOOTH
+					);
+
 					this.mainButtons = report[5 + bluetoothOffset];
 
-					this.triangleButton = (this.mainButtons & 0b10000000) == 0b10000000;
-					this.circleButton = (this.mainButtons & 0b01000000) == 0b01000000;
-					this.squareButton = (this.mainButtons & 0b00010000) == 0b00010000;
-					this.crossButton = (this.mainButtons & 0b00100000) == 0b00100000;
+					this.triangleButton = (this.mainButtons & 0b_1000_0000) == 0b_1000_0000;
+					this.circleButton = (this.mainButtons & 0b_0100_0000) == 0b_0100_0000;
+					this.squareButton = (this.mainButtons & 0b_0001_0000) == 0b_0001_0000;
+					this.crossButton = (this.mainButtons & 0b_0010_0000) == 0b_0010_0000;
 
-					this.directionalPad = (byte)(this.mainButtons & 0b00001111); // TODO check if this cast works as expected
+					this.directionalPad = (byte)(this.mainButtons & 0b_0000_1111); // TODO check if this cast works as expected
 					/*
 					this.upButton: (this.directionalPad == 0 || this.directionalPad == 1 || this.directionalPad == 7),
 					this.rightButton: (this.directionalPad == 2 || this.directionalPad == 1 || this.directionalPad == 3),
@@ -149,18 +251,18 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 					this.secondaryButtons = report[6 + bluetoothOffset];
 
-					this.l1 = (this.secondaryButtons & 0b00000001) == 0b00000001;
-					this.r1 = (this.secondaryButtons & 0b00000010) == 0b00000010;
-					this.l2 = (this.secondaryButtons & 0b00000100) == 0b00000100;
-					this.r2 = (this.secondaryButtons & 0b00001000) == 0b00001000;
+					this.l1 = (this.secondaryButtons & 0b_0000_0001) == 0b_0000_0001;
+					this.r1 = (this.secondaryButtons & 0b_0000_0010) == 0b_0000_0010;
+					this.l2 = (this.secondaryButtons & 0b_0000_0100) == 0b_0000_0100;
+					this.r2 = (this.secondaryButtons & 0b_0000_1000) == 0b_0000_1000;
 
-					this.l3 = (this.secondaryButtons & 0b01000000) == 0b01000000;
-					this.r3 = (this.secondaryButtons & 0b10000000) == 0b10000000;
+					this.l3 = (this.secondaryButtons & 0b_0100_0000) == 0b_0100_0000;
+					this.r3 = (this.secondaryButtons & 0b_1000_0000) == 0b_1000_0000;
 
-					this.shareButton = (this.secondaryButtons & 0b00010000) == 0b00010000;
-					this.optionsButton = (this.secondaryButtons & 0b00100000) == 0b00100000;
+					this.shareButton = (this.secondaryButtons & 0b_0001_0000) == 0b_0001_0000;
+					this.optionsButton = (this.secondaryButtons & 0b_0010_0000) == 0b_0010_0000;
 
-					this.psButton = (report[7 + bluetoothOffset] & 0b00000001) == 0b00000001;
+					this.psButton = (report[7 + bluetoothOffset] & 0b_0000_0001) == 0b_0000_0001;
 
 					this.reportIterator = (byte)(report[7 + bluetoothOffset] >> 2); // [7] 	Counter (counts up by 1 per report), I guess this is only relevant to bluetooth
 
@@ -272,7 +374,64 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 					// trackpad
 
-					this.trackpadButton = (report[7 + bluetoothOffset] & 0b00000010) == 0b00000010;
+					this.trackpadButton = (report[7 + bluetoothOffset] & 0b_0000_0010) == 0b_0000_0010;
+
+					// gyro - not all reports will have this, need to see how to check before calculating them
+
+					// TODO calibrate these values and check the x, y, z order
+
+					this.gyroX = (Int16)(report[14 + bluetoothOffset] << 8) | (Int16)report[13 + bluetoothOffset];
+					this.gyroY = (Int16)(report[16 + bluetoothOffset] << 8) | (Int16)report[15 + bluetoothOffset];
+					this.gyroZ = (Int16)(report[18 + bluetoothOffset] << 8) | (Int16)report[17 + bluetoothOffset];
+
+					this.accelX = (Int16)(report[20 + bluetoothOffset] << 8) | (Int16)report[19 + bluetoothOffset];
+					this.accelY = (Int16)(report[22 + bluetoothOffset] << 8) | (Int16)report[21 + bluetoothOffset];
+					this.accelZ = (Int16)(report[24 + bluetoothOffset] << 8) | (Int16)report[23 + bluetoothOffset];
+
+					// battery
+
+					this.cableConnected = ((report[30 + bluetoothOffset] >> 4) & 0b_0000_0001) == 1;
+					this.batteryLevel = (byte)(report[30 + bluetoothOffset] & 0b_0000_1111);
+
+					if (!this.cableConnected || this.batteryLevel > 10) {
+						this.batteryCharging = false;
+					}
+					else
+					{
+						this.batteryCharging = true;
+		  			}
+
+					// on usb battery tanges from 0 to 9, but on bluetooth the range is 0 to 10
+					if (!this.cableConnected && this.batteryLevel < 10) {
+						this.batteryLevel += 1;
+					}
+
+					if (this.previousBatteryLevel != this.batteryLevel) {
+
+						this.previousBatteryLevel = this.batteryLevel;
+			
+						/*DispatchQueue.main.async {
+							NotificationCenter.default.post(
+								name: GamePadBatteryChangedNotification.Name,
+								object: GamePadBatteryChangedNotification(
+									battery: self.batteryLevel,
+									batteryMin: 0,
+									batteryMax: 8
+								)
+							)
+						}*/
+
+					}
+
+					/*
+					[30] 	EXT/HeadSet/Earset: bitmask
+
+					01111011 is headset with mic (0x7B)
+					00111011 is headphones (0x3B)
+					00011011 is nothing attached (0x1B)
+					00001000 is bluetooth? (0x08)
+					00000101 is ? (0x05)
+					*/
 
 				}
 			}
@@ -509,43 +668,12 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		}
 
-		private void ApplyCalibs(
-			ref int yaw, ref int pitch, ref int roll,
-			ref int accelX, ref int accelY, ref int accelZ
-		) {
-
-			/*CalibData current = this.calibrationData[0];
-			temInt = pitch - current.bias;
-			pitch = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
-
-			current = this.calibrationData[1];
-			temInt = yaw - current.bias;
-			yaw = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
-
-			current = this.calibrationData[2];
-			temInt = roll - current.bias;
-			roll = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
-
-			current = this.calibrationData[3];
-			temInt = accelX - current.bias;
-			accelX = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
-
-			current = this.calibrationData[4];
-			temInt = accelY - current.bias;
-			accelY = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
-
-			current = this.calibrationData[5];
-			temInt = accelZ - current.bias;
-			accelZ = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));*/
-
-		}
-
 		public void SetCalibrationData(ref byte[] calibrationReport, bool fromUSB)
 		{
 
-			this.calibration[0].bias = (short)((ushort)(calibrationReport[2] << 8) | calibrationReport[1]);
-			this.calibration[1].bias = (short)((ushort)(calibrationReport[4] << 8) | calibrationReport[3]);
-			this.calibration[2].bias = (short)((ushort)(calibrationReport[6] << 8) | calibrationReport[5]);
+			this.calibration[Calibration.GyroPitchIndex].sensorBias = (short)((ushort)(calibrationReport[2] << 8) | calibrationReport[1]);
+			this.calibration[Calibration.GyroYawIndex].sensorBias   = (short)((ushort)(calibrationReport[4] << 8) | calibrationReport[3]);
+			this.calibration[Calibration.GyroRollIndex].sensorBias  = (short)((ushort)(calibrationReport[6] << 8) | calibrationReport[5]);
 
 			int pitchPlus;
 			int pitchMinus;
@@ -556,37 +684,41 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 			if (!fromUSB)
 			{
-				pitchPlus = (short)((ushort)(calibrationReport[8] << 8) | calibrationReport[7]);
-				yawPlus = (short)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
-				rollPlus = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
+				pitchPlus  = (short)((ushort)(calibrationReport[8] << 8) | calibrationReport[7]);
+				yawPlus    = (short)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
+				rollPlus   = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
 				pitchMinus = (short)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
-				yawMinus = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
-				rollMinus = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
+				yawMinus   = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
+				rollMinus  = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
 			}
 			else
 			{
-				pitchPlus = (short)((ushort)(calibrationReport[8] << 8) | calibrationReport[7]);
+				pitchPlus  = (short)((ushort)(calibrationReport[8] << 8) | calibrationReport[7]);
 				pitchMinus = (short)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
-				yawPlus = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
-				yawMinus = (short)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
-				rollPlus = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
-				rollMinus = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
+				yawPlus    = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
+				yawMinus   = (short)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
+				rollPlus   = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
+				rollMinus  = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
 			}
 
 			// gyroscope
 
-			var gyroSpeedPlus = (short)((ushort)(calibrationReport[20] << 8) | calibrationReport[19]);
+			var gyroSpeedPlus  = (short)((ushort)(calibrationReport[20] << 8) | calibrationReport[19]);
 			var gyroSpeedMinus = (short)((ushort)(calibrationReport[22] << 8) | calibrationReport[21]);
 
-			var gyroSpeed2x = gyroSpeedPlus + gyroSpeedMinus;
-			this.calibration[0].sensNumer = gyroSpeed2x * GYRO_RES_IN_DEG_SEC;
-			this.calibration[0].sensDenom = pitchPlus - pitchMinus;
+			// Note from linux hid driver
+			// Set gyroscope calibration and normalization parameters.
+			// Data values will be normalized to 1/DS4_GYRO_RES_PER_DEG_S degree/s.
 
-			this.calibration[1].sensNumer = gyroSpeed2x * GYRO_RES_IN_DEG_SEC;
-			this.calibration[1].sensDenom = yawPlus - yawMinus;
+			var gyroSpeed2x = gyroSpeedPlus + gyroSpeedMinus; // FIXME this is constant, no need to calculate everytime
+			this.calibration[Calibration.GyroPitchIndex].sensResolutionRange = gyroSpeed2x //  * GYRO_RES_IN_DEG_SEC;
+			this.calibration[Calibration.GyroPitchIndex].sensorRange = pitchPlus - pitchMinus;
 
-			this.calibration[2].sensNumer = gyroSpeed2x * GYRO_RES_IN_DEG_SEC;
-			this.calibration[2].sensDenom = rollPlus - rollMinus;
+			this.calibration[Calibration.GyroYawIndex].sensResolutionRange = gyroSpeed2x // * GYRO_RES_IN_DEG_SEC;
+			this.calibration[Calibration.GyroYawIndex].sensorRange = yawPlus - yawMinus;
+
+			this.calibration[Calibration.GyroRollIndex].sensResolutionRange = gyroSpeed2x // * GYRO_RES_IN_DEG_SEC;
+			this.calibration[Calibration.GyroRollIndex].sensorRange = rollPlus - rollMinus;
 
 			// acceleration
 
@@ -599,29 +731,95 @@ namespace GameInterruptLibraryCSCore.Controllers
 			var accelZPlus = (short)((ushort)(calibrationReport[32] << 8) | calibrationReport[31]);
 			var accelZMinus = (short)((ushort)(calibrationReport[34] << 8) | calibrationReport[33]);
 
+			// Note from linux hid driver
+			// Set accelerometer calibration and normalization parameters.
+			// Data values will be normalized to 1/DS4_ACC_RES_PER_G G.
+
 			var accelRange = accelXPlus - accelXMinus;
-			this.calibration[3].bias = accelXPlus - accelRange / 2;
-			this.calibration[3].sensNumer = 2 * ACC_RES_PER_G;
-			this.calibration[3].sensDenom = accelRange;
+			this.calibration[3].sensorBias = accelXPlus - accelRange / 2; // TODO why does this need to be an integer?
+			// this.calibration[3].sensResolutionRange = 2 * ACC_RES_PER_G;
+			this.calibration[3].sensorRange = accelRange;
 
 			accelRange = accelYPlus - accelYMinus;
-			this.calibration[4].bias = accelYPlus - accelRange / 2;
-			this.calibration[4].sensNumer = 2 * ACC_RES_PER_G;
-			this.calibration[4].sensDenom = accelRange;
+			this.calibration[4].sensorBias = accelYPlus - accelRange / 2; // TODO why does this need to be an integer?
+			// this.calibration[4].sensResolutionRange = 2 * ACC_RES_PER_G;
+			this.calibration[4].sensorRange = accelRange;
 
 			accelRange = accelZPlus - accelZMinus;
-			this.calibration[5].bias = accelZPlus - accelRange / 2;
-			this.calibration[5].sensNumer = 2 * ACC_RES_PER_G;
-			this.calibration[5].sensDenom = accelRange;
+			this.calibration[5].sensorBias = accelZPlus - accelRange / 2; // TODO why does this need to be an integer?
+			// this.calibration[5].sensResolutionRange = 2 * ACC_RES_PER_G;
+			this.calibration[5].sensorRange = accelRange;
 
 			// Check that denom will not be zero.
-			this.calibrationDone = this.calibration[0].sensDenom != 0
-				&& this.calibration[1].sensDenom != 0
-				&& this.calibration[2].sensDenom != 0
+			this.calibrationDone = this.calibration[0].sensorRange != 0
+				&& this.calibration[1].sensorRange != 0
+				&& this.calibration[2].sensorRange != 0
 				&& accelRange != 0;
 
 		}
 
+		private void ApplyCalibs(
+			ref int yaw, ref int pitch, ref int roll,
+			ref int accelX, ref int accelY, ref int accelZ
+		) {
+
+			pitch = DualShock4Controller.ApplyGyroCalibration(
+				pitch,
+				this.calibration[0].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[0].sensorRange
+			);
+
+			yaw = DualShock4Controller.ApplyGyroCalibration(
+				yaw,
+				this.calibration[1].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[1].sensorRange
+			);
+
+			roll = DualShock4Controller.ApplyGyroCalibration(
+				roll,
+				this.calibration[2].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[2].sensorRange
+			);
+
+			accelX = DualShock4Controller.ApplyAccelCalibration(
+				accelX,
+				this.calibration[3].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[3].sensorRange
+			);
+
+			accelY = DualShock4Controller.ApplyAccelCalibration(
+				accelY,
+				this.calibration[4].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[4].sensorRange
+			);
+
+			accelZ = DualShock4Controller.ApplyAccelCalibration(
+				accelZ,
+				this.calibration[5].sensorBias,
+				GYRO_RES_IN_DEG_SEC,
+				this.calibration[5].sensorRange
+			);
+
+		}
+
+		private static int ApplyGyroCalibration(int sensorRawValue, int sensorBias, int sensorResolution, int sensorRange)
+		{
+			var calibratedValue = ((sensorRawValue - sensorBias) * 2 * sensorResolution) / sensorRange; // TODO not sure why I would need this to be an integer
+			return calibratedValue;
+		}
+
+		private static int ApplyAccelCalibration(int sensorRawValue, int sensorBias, int sensorResolution, int sensorRange)
+		{
+			var calibratedValue = ((sensorRawValue - sensorBias) * 2 * sensorResolution) / sensorRange; // TODO not sure why I would need this to be an integer
+			return calibratedValue;
+		}
+
+		// TODO change this to a struct or object with properties, array with indexes is kind of ugly
 		private Calibration[] calibration = {
 			new Calibration(),
 			new Calibration(),
@@ -642,6 +840,8 @@ namespace GameInterruptLibraryCSCore.Controllers
 		private ConnectionType connectionType;
 
 		private string macAddress;
+
+		private ManualResetEventSlim readWaitEv = new ManualResetEventSlim();
 
 		#region input and output reports
 
@@ -799,9 +999,9 @@ namespace GameInterruptLibraryCSCore.Controllers
 		public const int AccelYIndex = 4;
 		public const int AccelZIndex = 5;
 
-		public int bias;
-		public int sensNumer;
-		public int sensDenom;
+		public int sensorBias;
+		public int sensResolutionRange;
+		public int sensorRange;
 	}
 
 }
