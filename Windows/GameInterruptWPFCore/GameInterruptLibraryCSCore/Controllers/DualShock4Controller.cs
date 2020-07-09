@@ -38,22 +38,27 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		public const int GYRO_RES_IN_DEG_SEC = 16; // means 1 degree/second is 16 (4 bits) 0b0000 ??
 
+		private const byte REPORT_PROTOCOL_INPUT_SIMPLE = 0x01; // 0b0000_0001
+		private const byte REPORT_PROTOCOL_INPUT_IMU_11 = 0x11; // 0b0001_0001
+		private const byte REPORT_PROTOCOL_INPUT_IMU_17 = 0x17; // 0b0001_0001
+
 		#endregion
 
 		public DualShock4Controller(HidDevice hidGameController, string displayName, VendorIdProductIdFeatureSet featureSet = VendorIdProductIdFeatureSet.DefaultDS4)
 		{
 
 			this.hidGameController = hidGameController;
+
 			this.connectionType = HidConnectionType(this.hidGameController);
 			this.macAddress = this.hidGameController.ReadSerial(); // TODO rename this so it is clearer
 			this.ExitOutputThread = false;
 
+			System.Diagnostics.Debug.WriteLine($" input report length: {this.hidGameController.Capabilities.InputReportByteLength}");
+
 			if (!this.hidGameController.IsFileStreamOpen())
 			{
-				this.hidGameController.OpenFileStream(this.hidGameController.Capabilities.InputReportByteLength); // TODO check if this changes when in Bluetooth or USB
+				this.hidGameController.OpenFileStream(547 - 2 /*this.hidGameController.Capabilities.InputReportByteLength*/); // TODO check if this changes when in Bluetooth or USB
 			}
-
-			System.Diagnostics.Debug.WriteLine($" input report length: {this.hidGameController.Capabilities.InputReportByteLength}");
 
 			if ((featureSet & VendorIdProductIdFeatureSet.NoGyroCalib) != VendorIdProductIdFeatureSet.NoGyroCalib) {
 				this.UpdateCalibrationData(this.hidGameController);
@@ -61,8 +66,10 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 			// initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
 			// this.SendOutputReport(true, true, false);
-
 			this.StartUpdates();
+
+			//this.ChangeRumble(10, 0);
+			this.ChangeLed(0, 200, 200);
 
 		}
 
@@ -122,19 +129,19 @@ namespace GameInterruptLibraryCSCore.Controllers
 				while (!this.ExitInputThread)
 				{
 
-					readWaitEv.Set();
+					this.readWaitEv.Set();
 
 					var report = new byte[this.hidGameController.Capabilities.InputReportByteLength]; // it is 500+, but this is only used when audio is transmitted, the actual values are 64 for buttons I think
 					var success = this.hidGameController.ReadWithFileStream(report);
 
-					readWaitEv.Wait();
-					readWaitEv.Reset();
+					this.readWaitEv.Wait();
+					this.readWaitEv.Reset();
 
 					// TODO check how this looks like for USB and probably there's a better way to poll this data
 					if (!success)
 					{
 						Thread.Sleep(100);
-						continue; // TODO I should give a timeout?
+						continue; // TODO I should give a timeout or yield or something?
 					}
 
 					Thread.Sleep(100); // TODO for debugging purposes only
@@ -183,14 +190,11 @@ namespace GameInterruptLibraryCSCore.Controllers
 					applications e.g. games on Wine would not be able to function due to different descriptors, which such applications are not parsing.
 					*/
 
-					// TODO put the constants somewhere else
 
-					const byte REPORT_PROTOCOL_INPUT_SIMPLE = 0x01; // 0b0000_0001
-					const byte REPORT_PROTOCOL_INPUT_IMU_11 = 0x11; // 0b0001_0001
-					const byte REPORT_PROTOCOL_INPUT_IMU_17 = 0x17; // 0b0001_0001
+					// check report protocol
 
 					var reportProtocol = report[0];
-					System.Diagnostics.Debug.WriteLine($"report protocol {Convert.ToString(reportProtocol, 2).PadLeft(8, '0')}");
+					// System.Diagnostics.Debug.WriteLine($"report protocol {Convert.ToString(reportProtocol, 2).PadLeft(8, '0')}");
 					if (reportProtocol != REPORT_PROTOCOL_INPUT_SIMPLE
 						&& reportProtocol != REPORT_PROTOCOL_INPUT_IMU_11
 						&& reportProtocol != REPORT_PROTOCOL_INPUT_IMU_17
@@ -198,6 +202,9 @@ namespace GameInterruptLibraryCSCore.Controllers
 					{
 						continue;
 					}
+
+
+					// CRC 32
 
 					/*switch (reportProtocol)
 					{
@@ -234,6 +241,9 @@ namespace GameInterruptLibraryCSCore.Controllers
 						ref report,
 						bufferLength: 10 //DS4_INPUT_SIMPLE_REPORT_LEN_BLUETOOTH
 					);
+
+
+					// parse data
 
 					this.mainButtons = report[5 + bluetoothOffset];
 
@@ -350,6 +360,9 @@ namespace GameInterruptLibraryCSCore.Controllers
 						|| this.previousRightTrigger != this.rightTrigger
 						) {
 
+						// System.Diagnostics.Debug.WriteLine($"left stick y: {this.leftStickY}");
+						// System.Diagnostics.Debug.WriteLine($"right stick y: {this.rightStickY}");
+
 						/*DispatchQueue.main.async {
 							NotificationCenter.default.post(
 								name: GamePadAnalogChangedNotification.Name,
@@ -379,15 +392,36 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 					// gyro - not all reports will have this, need to see how to check before calculating them
 
-					// TODO calibrate these values and check the x, y, z order
+					this.gyroPitch = (Int16)((report[14 + bluetoothOffset] << 8) | report[13 + bluetoothOffset]);
+					this.gyroYaw = (Int16)((report[16 + bluetoothOffset] << 8) | report[15 + bluetoothOffset]);
+					this.gyroRoll = (Int16)((report[18 + bluetoothOffset] << 8) | report[17 + bluetoothOffset]);
 
-					this.gyroX = (Int16)(report[14 + bluetoothOffset] << 8) | (Int16)report[13 + bluetoothOffset];
-					this.gyroY = (Int16)(report[16 + bluetoothOffset] << 8) | (Int16)report[15 + bluetoothOffset];
-					this.gyroZ = (Int16)(report[18 + bluetoothOffset] << 8) | (Int16)report[17 + bluetoothOffset];
+					this.accelX = (Int16)((report[20 + bluetoothOffset] << 8) | report[19 + bluetoothOffset]);
+					this.accelY = (Int16)((report[22 + bluetoothOffset] << 8) | report[21 + bluetoothOffset]);
+					this.accelZ = (Int16)((report[24 + bluetoothOffset] << 8) | report[23 + bluetoothOffset]);
 
-					this.accelX = (Int16)(report[20 + bluetoothOffset] << 8) | (Int16)report[19 + bluetoothOffset];
-					this.accelY = (Int16)(report[22 + bluetoothOffset] << 8) | (Int16)report[21 + bluetoothOffset];
-					this.accelZ = (Int16)(report[24 + bluetoothOffset] << 8) | (Int16)report[23 + bluetoothOffset];
+					// System.Diagnostics.Debug.WriteLine($"gyro pitch: {this.gyroPitch}");
+					// System.Diagnostics.Debug.WriteLine($"gyro yaw:   {this.gyroYaw}");
+					// System.Diagnostics.Debug.WriteLine($"gyro roll:  {this.gyroRoll}");
+
+					System.Diagnostics.Debug.WriteLine($"accel x before: {this.accelX}");
+					// System.Diagnostics.Debug.WriteLine($"accel y: {this.accelY}");
+					// System.Diagnostics.Debug.WriteLine($"accel z: {this.accelZ}");
+
+					this.ApplyCalibration(
+						ref this.gyroPitch, ref this.gyroYaw, ref this.gyroRoll,
+						ref this.accelX, ref this.accelY, ref this.accelZ
+					);
+
+					// System.Diagnostics.Debug.WriteLine($"gyro pitch: {this.gyroPitch}");
+					// System.Diagnostics.Debug.WriteLine($"gyro yaw:   {this.gyroYaw}");
+					// System.Diagnostics.Debug.WriteLine($"gyro roll:  {this.gyroRoll}");
+
+					System.Diagnostics.Debug.WriteLine($"accel x after:  {this.accelX}");
+					// System.Diagnostics.Debug.WriteLine($"accel y: {this.accelY}");
+					// System.Diagnostics.Debug.WriteLine($"accel z: {this.accelZ}");
+
+					// TODO calculate this.rotationX, this.rotationY, this.rotationZ based on gyro and accel
 
 					// battery
 
@@ -402,7 +436,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 						this.batteryCharging = true;
 		  			}
 
-					// on usb battery tanges from 0 to 9, but on bluetooth the range is 0 to 10
+					// on usb battery ranges from 0 to 9, but on bluetooth the range is 0 to 10
 					if (!this.cableConnected && this.batteryLevel < 10) {
 						this.batteryLevel += 1;
 					}
@@ -436,39 +470,11 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 				}
 			}
-			catch (ThreadInterruptedException ex)
+			catch (ThreadInterruptedException exception)
 			{
-				// TODO
+				System.Diagnostics.Debug.WriteLine(exception.Message);
 			}
 
-		}
-
-		public void HandleSixaxis(ref byte gyro, ref byte accel, /*DS4State state,*/ double elapsedDelta)
-		{
-			/*int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
-			int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
-			int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
-			int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
-			int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
-			int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
-
-			if (calibrationDone)
-				applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
-
-			SixAxisEventArgs args = null;
-			if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
-			{
-				if (SixAccelMoved != null)
-				{
-					sPrev.copy(now);
-					now.populate(currentYaw, currentPitch, currentRoll,
-						AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
-
-					args = new SixAxisEventArgs(state.ReportTimeStamp, now);
-					state.Motion = now;
-					SixAccelMoved(this, args);
-				}
-			}*/
 		}
 
 		#endregion
@@ -573,9 +579,132 @@ namespace GameInterruptLibraryCSCore.Controllers
 					}*/
 				}
 			}
-			catch (ThreadInterruptedException ex)
+			catch (ThreadInterruptedException exception)
 			{
-				// TODO
+				System.Diagnostics.Debug.WriteLine(exception.Message);
+			}
+
+		}
+
+		private void ChangeRumble(/*Notification notification*/byte leftHeavySlowRumble, byte rightLightFastRumble)
+		{
+
+			/*let o = notification.object as!DualShock4ChangeRumbleNotification
+
+			sendReport(
+				leftHeavySlowRumble: o.leftHeavySlowRumble,
+				rightLightFastRumble: o.rightLightFastRumble,
+				red: 0,
+				green: 0,
+				blue: 255
+			)*/
+
+			this.SendReport(
+				leftHeavySlowRumble,
+				rightLightFastRumble,
+				0,
+				0,
+				255
+			);
+
+		}
+
+		private void ChangeLed(/*Notification notification*/byte red, byte green, byte blue)
+		{
+
+			/*let o = notification.object as!DualShock4ChangeLedNotification
+	
+			sendReport(
+				leftHeavySlowRumble: 0,
+				rightLightFastRumble: 0,
+				red: UInt8(o.red * 255),
+				green: UInt8(o.green * 255),
+				blue: UInt8(o.blue * 255)
+			)*/
+
+			this.SendReport(
+				0,
+				0,
+				red,
+				green,
+				blue
+			);
+
+		}
+
+		private void SendReport(byte leftHeavySlowRumble, byte rightLightFastRumble, byte red, byte green, byte blue, byte flashOn = 0, byte flashOff = 0)
+		{
+
+			// let toggleMotor:UInt8 = 0xf0 // 0xf0 disable 0xf3 enable or 0b00001111 // enable unknown, flash, color, rumble
+
+			// let flashOn:UInt8 = 0x00 // flash on duration (in what units??)
+			// let flashOff:UInt8 = 0x00 // flash off duration (in what units??)
+
+			var bluetoothOffset = this.connectionType == ConnectionType.Bluetooth ? 2 : 0;
+
+			byte[] dualshock4ControllerOutputReport;
+
+			if (this.connectionType == ConnectionType.Bluetooth) {
+				// TODO check this with docs and other projects
+				dualshock4ControllerOutputReport = new byte[this.hidGameController.Capabilities.OutputReportByteLength]; // was 74
+				dualshock4ControllerOutputReport[0] = 0x15; // 0x11
+				dualshock4ControllerOutputReport[1] = 0x0; //(0xC0 | btPollRate) // (0x80 | btPollRate); // input report rate // FIXME check this
+														   // enable rumble (0x01), lightbar (0x02), flash (0x04) // TODO check this too
+				dualshock4ControllerOutputReport[2] = 0xA0;
+			}
+			else
+			{
+				dualshock4ControllerOutputReport = new byte[this.hidGameController.Capabilities.OutputReportByteLength]; // was 11
+				dualshock4ControllerOutputReport[0] = 0x05;
+  			}
+
+			// enable rumble (0x01), lightbar (0x02), flash (0x04) 0b00000111
+			dualshock4ControllerOutputReport[1 + bluetoothOffset] = 0xf7; // 0b11110111
+			dualshock4ControllerOutputReport[2 + bluetoothOffset] = 0x04;
+			dualshock4ControllerOutputReport[4 + bluetoothOffset] = rightLightFastRumble;
+			dualshock4ControllerOutputReport[5 + bluetoothOffset] = leftHeavySlowRumble;
+			dualshock4ControllerOutputReport[6 + bluetoothOffset] = red;
+			dualshock4ControllerOutputReport[7 + bluetoothOffset] = green;
+			dualshock4ControllerOutputReport[8 + bluetoothOffset] = blue;
+			dualshock4ControllerOutputReport[9 + bluetoothOffset] = flashOn;
+			dualshock4ControllerOutputReport[10 + bluetoothOffset] = flashOff;
+
+			bool success = false;
+
+			try
+			{
+
+				/*if (this.connectionType == ConnectionType.Bluetooth)
+				{
+					// TODO calculate CRC32 here
+					// let dualshock4ControllerInputReportBluetoothCRC = CRC32.checksum(bytes: dualshock4ControllerInputReportBluetooth);
+					// dualshock4ControllerInputReportBluetooth.append(contentsOf: dualshock4ControllerInputReportBluetoothCRC);
+
+					success = this.hidGameController.WriteOutputReportViaControl(
+						dualshock4ControllerOutputReport
+					);
+				}
+				else
+				{
+					success = this.hidGameController.WriteOutputReportViaInterrupt(
+						dualshock4ControllerOutputReport,
+						3000
+					);
+				}*/
+
+				success = this.hidGameController.WriteOutputReportViaControl(
+					dualshock4ControllerOutputReport
+				);
+
+				if (!success)
+				{
+					var thisError = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+					System.Diagnostics.Debug.WriteLine($"Error writing report: {thisError}");
+				}
+			}
+			catch (Exception exception)
+			{
+				System.Diagnostics.Debug.WriteLine(exception.Message);
 			}
 
 		}
@@ -587,7 +716,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 		public void UpdateCalibrationData(HidDevice hidGameController)
 		{
 			const int DS4_CALIBRATION_FEATURE_REPORT_HEADER_USB = 0x02;
-			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_USB = 37; // TODO not sure about this
+			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_USB = 37; // TODO not sure about this, but it is working :)
 
 			const int DS4_CALIBRATION_FEATURE_REPORT_HEADER_BLUETOOTH = 0x05;
 			const int DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH = 37;
@@ -598,15 +727,60 @@ namespace GameInterruptLibraryCSCore.Controllers
 			var calibrationFeatureReport = new byte[DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH_WITH_CRC32];
 			calibrationFeatureReport[0] = DS4_CALIBRATION_FEATURE_REPORT_HEADER_BLUETOOTH;
 
-			if (this.connectionType == ConnectionType.Bluetooth)
+			if (this.connectionType != ConnectionType.Bluetooth)
 			{
 				calibrationFeatureReport[0] = DS4_CALIBRATION_FEATURE_REPORT_HEADER_USB;
 				hidGameController.ReadFeatureData(ref calibrationFeatureReport);
 			}
 			else
 			{
-				hidGameController.ReadFeatureData(ref calibrationFeatureReport, DS4_CALIBRATION_FEATURE_REPORT_LEN_USB);
+				hidGameController.ReadFeatureData(ref calibrationFeatureReport, DS4_CALIBRATION_FEATURE_REPORT_LEN_BLUETOOTH_WITH_CRC32);
 			}
+
+			/*
+			// for reference:
+			[0] 5
+			[1] 251
+			[2] 255
+			[3] 252
+			[4] 255
+			[5] 255
+			[6] 255
+			[7] 157
+			[8] 33
+			[9] 165
+			[10] 34
+			[11] 102
+			[12] 36
+			[13] 94
+			[14] 222
+			[15] 91
+			[16] 221
+			[17] 143
+			[18] 219
+			[19] 28
+			[20] 2
+			[21] 28
+			[22] 2
+			[23] 87
+			[24] 31
+			[25] 169
+			[26] 224
+			[27] 218
+			[28] 32
+			[29] 38
+			[30] 223
+			[31] 207
+			[32] 31
+			[33] 49
+			[34] 224
+			[35] 6
+			[36] 0
+			[37] 212
+			[38] 77
+			[39] 82
+			[40] 113
+			*/
 
 			if (this.connectionType == ConnectionType.Bluetooth)
 			{
@@ -674,30 +848,30 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 			// gyroscopes
 
-			int pitchPlus = 0;
-			int pitchMinus = 0;
-			int yawPlus = 0;
-			int yawMinus = 0;
-			int rollPlus = 0;
-			int rollMinus = 0;
+			Int16 pitchPlus = 0;
+			Int16 pitchMinus = 0;
+			Int16 yawPlus = 0;
+			Int16 yawMinus = 0;
+			Int16 rollPlus = 0;
+			Int16 rollMinus = 0;
 
 			if (!fromUSB)
 			{
-				pitchPlus  = (short)((ushort)(calibrationReport[8]  << 8) | calibrationReport[7]);
-				yawPlus    = (short)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
-				rollPlus   = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
-				pitchMinus = (short)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
-				yawMinus   = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
-				rollMinus  = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
+				pitchPlus  = (Int16)((ushort)(calibrationReport[8]  << 8) | calibrationReport[7]);
+				yawPlus    = (Int16)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
+				rollPlus   = (Int16)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
+				pitchMinus = (Int16)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
+				yawMinus   = (Int16)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
+				rollMinus  = (Int16)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
 			}
 			else
 			{
-				pitchPlus  = (short)((ushort)(calibrationReport[8]  << 8) | calibrationReport[7]);
-				pitchMinus = (short)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
-				yawPlus    = (short)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
-				yawMinus   = (short)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
-				rollPlus   = (short)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
-				rollMinus  = (short)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
+				pitchPlus  = (Int16)((ushort)(calibrationReport[8]  << 8) | calibrationReport[7]);
+				pitchMinus = (Int16)((ushort)(calibrationReport[10] << 8) | calibrationReport[9]);
+				yawPlus    = (Int16)((ushort)(calibrationReport[12] << 8) | calibrationReport[11]);
+				yawMinus   = (Int16)((ushort)(calibrationReport[14] << 8) | calibrationReport[13]);
+				rollPlus   = (Int16)((ushort)(calibrationReport[16] << 8) | calibrationReport[15]);
+				rollMinus  = (Int16)((ushort)(calibrationReport[18] << 8) | calibrationReport[17]);
 			}
 
 			this.calibration[Calibration.GyroPitchIndex].plusValue = pitchPlus;
@@ -709,24 +883,24 @@ namespace GameInterruptLibraryCSCore.Controllers
 			this.calibration[Calibration.GyroRollIndex].plusValue = rollPlus;
 			this.calibration[Calibration.GyroRollIndex].minusValue = rollMinus;
 
-			this.calibration[Calibration.GyroPitchIndex].sensorBias = (short)((ushort)(calibrationReport[2] << 8) | calibrationReport[1]);
-			this.calibration[Calibration.GyroYawIndex].sensorBias   = (short)((ushort)(calibrationReport[4] << 8) | calibrationReport[3]);
-			this.calibration[Calibration.GyroRollIndex].sensorBias  = (short)((ushort)(calibrationReport[6] << 8) | calibrationReport[5]);
+			this.calibration[Calibration.GyroPitchIndex].sensorBias = (Int16)((ushort)(calibrationReport[2] << 8) | calibrationReport[1]);
+			this.calibration[Calibration.GyroYawIndex].sensorBias   = (Int16)((ushort)(calibrationReport[4] << 8) | calibrationReport[3]);
+			this.calibration[Calibration.GyroRollIndex].sensorBias  = (Int16)((ushort)(calibrationReport[6] << 8) | calibrationReport[5]);
 
-			this.gyroSpeedPlus  = (short)((ushort)(calibrationReport[20] << 8) | calibrationReport[19]);
-			this.gyroSpeedMinus = (short)((ushort)(calibrationReport[22] << 8) | calibrationReport[21]);
-			this.gyroSpeed2x = gyroSpeedPlus + gyroSpeedMinus;
+			this.gyroSpeedPlus  = (Int16)((ushort)(calibrationReport[20] << 8) | calibrationReport[19]);
+			this.gyroSpeedMinus = (Int16)((ushort)(calibrationReport[22] << 8) | calibrationReport[21]);
+			this.gyroSpeed2x = (Int16)(gyroSpeedPlus + gyroSpeedMinus);
 
 			// accelerometers
 
-			var accelXPlus  = (short)((ushort)(calibrationReport[24] << 8) | calibrationReport[23]);
-			var accelXMinus = (short)((ushort)(calibrationReport[26] << 8) | calibrationReport[25]);
+			var accelXPlus  = (Int16)((ushort)(calibrationReport[24] << 8) | calibrationReport[23]);
+			var accelXMinus = (Int16)((ushort)(calibrationReport[26] << 8) | calibrationReport[25]);
 
-			var accelYPlus  = (short)((ushort)(calibrationReport[28] << 8) | calibrationReport[27]);
-			var accelYMinus = (short)((ushort)(calibrationReport[30] << 8) | calibrationReport[29]);
+			var accelYPlus  = (Int16)((ushort)(calibrationReport[28] << 8) | calibrationReport[27]);
+			var accelYMinus = (Int16)((ushort)(calibrationReport[30] << 8) | calibrationReport[29]);
 
-			var accelZPlus  = (short)((ushort)(calibrationReport[32] << 8) | calibrationReport[31]);
-			var accelZMinus = (short)((ushort)(calibrationReport[34] << 8) | calibrationReport[33]);
+			var accelZPlus  = (Int16)((ushort)(calibrationReport[32] << 8) | calibrationReport[31]);
+			var accelZMinus = (Int16)((ushort)(calibrationReport[34] << 8) | calibrationReport[33]);
 
 			this.calibration[Calibration.AccelXIndex].plusValue   = accelXPlus;
 			this.calibration[Calibration.AccelXIndex].minusValue  = accelXMinus;
@@ -737,16 +911,15 @@ namespace GameInterruptLibraryCSCore.Controllers
 			this.calibration[Calibration.AccelZIndex].plusValue   = accelZPlus;
 			this.calibration[Calibration.AccelZIndex].minusValue  = accelZMinus;
 
-			// TODO why does this need to be an integer?
-			this.calibration[Calibration.AccelXIndex].sensorBias = accelXPlus - ((accelXPlus - accelXMinus) / 2);
-			this.calibration[Calibration.AccelYIndex].sensorBias = accelYPlus - ((accelYPlus - accelYMinus) / 2);
-			this.calibration[Calibration.AccelZIndex].sensorBias = accelZPlus - ((accelZPlus - accelZMinus) / 2);
+			this.calibration[Calibration.AccelXIndex].sensorBias = (Int16)(accelXPlus - ((accelXPlus - accelXMinus) / 2));
+			this.calibration[Calibration.AccelYIndex].sensorBias = (Int16)(accelYPlus - ((accelYPlus - accelYMinus) / 2));
+			this.calibration[Calibration.AccelZIndex].sensorBias = (Int16)(accelZPlus - ((accelZPlus - accelZMinus) / 2));
 
 		}
 
-		private void ApplyCalibs(
-			ref int yaw, ref int pitch, ref int roll,
-			ref int accelX, ref int accelY, ref int accelZ
+		private void ApplyCalibration(
+			ref Int16 pitch, ref Int16 yaw, ref Int16 roll,
+			ref Int16 accelX, ref Int16 accelY, ref Int16 accelZ
 		) {
 
 			pitch = DualShock4Controller.ApplyGyroCalibration(
@@ -754,7 +927,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 				this.calibration[Calibration.GyroPitchIndex].sensorBias,
 				this.gyroSpeed2x,
 				sensorResolution: GYRO_RES_IN_DEG_SEC,
-				sensorRange: this.calibration[Calibration.GyroPitchIndex].plusValue - this.calibration[Calibration.GyroPitchIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.GyroPitchIndex].plusValue - this.calibration[Calibration.GyroPitchIndex].minusValue)
 			);
 
 			yaw = DualShock4Controller.ApplyGyroCalibration(
@@ -762,7 +935,7 @@ namespace GameInterruptLibraryCSCore.Controllers
 				this.calibration[Calibration.GyroYawIndex].sensorBias,
 				this.gyroSpeed2x,
 				sensorResolution: GYRO_RES_IN_DEG_SEC,
-				sensorRange: this.calibration[Calibration.GyroYawIndex].plusValue - this.calibration[Calibration.GyroYawIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.GyroYawIndex].plusValue - this.calibration[Calibration.GyroYawIndex].minusValue)
 			);
 
 			roll = DualShock4Controller.ApplyGyroCalibration(
@@ -770,65 +943,65 @@ namespace GameInterruptLibraryCSCore.Controllers
 				this.calibration[Calibration.GyroRollIndex].sensorBias,
 				this.gyroSpeed2x,
 				sensorResolution: GYRO_RES_IN_DEG_SEC,
-				sensorRange: this.calibration[Calibration.GyroRollIndex].plusValue - this.calibration[Calibration.GyroRollIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.GyroRollIndex].plusValue - this.calibration[Calibration.GyroRollIndex].minusValue)
 			);
 
 			accelX = DualShock4Controller.ApplyAccelCalibration(
 				accelX,
 				this.calibration[Calibration.AccelXIndex].sensorBias,
 				sensorResolution: ACC_RES_PER_G,
-				sensorRange: this.calibration[Calibration.AccelXIndex].plusValue - this.calibration[Calibration.AccelXIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.AccelXIndex].plusValue - this.calibration[Calibration.AccelXIndex].minusValue)
 			);
 
 			accelY = DualShock4Controller.ApplyAccelCalibration(
 				accelY,
 				this.calibration[Calibration.AccelYIndex].sensorBias,
 				sensorResolution: ACC_RES_PER_G,
-				sensorRange: this.calibration[Calibration.AccelYIndex].plusValue - this.calibration[Calibration.AccelYIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.AccelYIndex].plusValue - this.calibration[Calibration.AccelYIndex].minusValue)
 			);
 
 			accelZ = DualShock4Controller.ApplyAccelCalibration(
 				accelZ,
 				this.calibration[Calibration.AccelZIndex].sensorBias,
 				sensorResolution: ACC_RES_PER_G,
-				sensorRange: this.calibration[Calibration.AccelZIndex].plusValue - this.calibration[Calibration.AccelZIndex].minusValue
+				sensorRange: (Int16)(this.calibration[Calibration.AccelZIndex].plusValue - this.calibration[Calibration.AccelZIndex].minusValue)
 			);
 
 		}
 
-		private static int ApplyGyroCalibration(int sensorRawValue, int sensorBias, int gyroSpeed2x, int sensorResolution, int sensorRange)
+		private static Int16 ApplyGyroCalibration(Int16 sensorRawValue, Int16 sensorBias, Int16 gyroSpeed2x, Int16 sensorResolution, Int16 sensorRange)
 		{
-			int calibratedValue = 0; // TODO not sure why I would need this to be an integer
+			Int16 calibratedValue = 0; // TODO not sure why I would need this to be an integer
 
 			// plus and minus values are symmetrical, so bias is also 0
 			if (sensorRange == 0)
 			{
-				calibratedValue = sensorRawValue * gyroSpeed2x * sensorResolution;
+				calibratedValue = (Int16)(sensorRawValue * gyroSpeed2x * sensorResolution);
 				return calibratedValue;
 			}
 
-			calibratedValue = ((sensorRawValue - sensorBias) * gyroSpeed2x * sensorResolution) / sensorRange;
+			calibratedValue = (Int16)(((sensorRawValue - sensorBias) * gyroSpeed2x * sensorResolution) / sensorRange);
 			return calibratedValue;
 		}
 
-		private static int ApplyAccelCalibration(int sensorRawValue, int sensorBias, int sensorResolution, int sensorRange)
+		private static Int16 ApplyAccelCalibration(Int16 sensorRawValue, Int16 sensorBias, Int16 sensorResolution, Int16 sensorRange)
 		{
-			int calibratedValue = 0; // TODO not sure why I would need this to be an integer
+			Int16 calibratedValue = 0; // TODO not sure why I would need this to be an integer
 
 			// plus and minus values are symmetrical, so bias is also 0
 			if (sensorRange == 0)
 			{
-				calibratedValue = sensorRawValue * 2 * sensorResolution;
+				calibratedValue = (Int16)(sensorRawValue * 2 * sensorResolution);
 				return calibratedValue;
 			}
 
-			calibratedValue = ((sensorRawValue - sensorBias) * 2 * sensorResolution) / sensorRange;
+			calibratedValue = (Int16)(((sensorRawValue - sensorBias) * 2 * sensorResolution) / sensorRange);
 			return calibratedValue;
 		}
 
-		private int gyroSpeedPlus = 0;
-		private int gyroSpeedMinus = 0;
-		private int gyroSpeed2x = 0;
+		private Int16 gyroSpeedPlus = 0;
+		private Int16 gyroSpeedMinus = 0;
+		private Int16 gyroSpeed2x = 0;
 
 		// TODO change this to a struct or object with properties, array with indexes is kind of ugly
 		private Calibration[] calibration = {
@@ -839,8 +1012,6 @@ namespace GameInterruptLibraryCSCore.Controllers
 			new Calibration(),
 			new Calibration()
 		};
-
-		private bool calibrationDone = false;
 
 		#endregion
 
@@ -966,14 +1137,31 @@ namespace GameInterruptLibraryCSCore.Controllers
 
 		// inertial measurement unit
 
-		float gyroX = 0;
-		float gyroY = 0;
-		float gyroZ = 0;
+		// TODO not sure why they need to be ints
 
-		float accelX = 0;
-		float accelY = 0;
-		float accelZ = 0;
+		/// <summary>
+		/// Up and down rotation (tilt)
+		/// </summary>
+		Int16 gyroPitch = 0;
 
+		/// <summary>
+		/// Left and right rotation (pan)
+		/// </summary>
+		Int16 gyroYaw = 0;
+
+		/// <summary>
+		/// "Spin while looking forward" rotation (roll
+		/// </summary>
+		Int16 gyroRoll = 0;
+
+		Int16 accelX = 0;
+		Int16 accelY = 0;
+		Int16 accelZ = 0;
+
+		// TODO assign these combining values from gyros and accelerometers
+
+		float rotationX = 0;
+		float rotationY = 0;
 		float rotationZ = 0;
 
 		// battery
@@ -1010,9 +1198,9 @@ namespace GameInterruptLibraryCSCore.Controllers
 		public const int AccelYIndex = 4;
 		public const int AccelZIndex = 5;
 
-		public int plusValue;
-		public int minusValue;
-		public int sensorBias;
+		public Int16 plusValue;
+		public Int16 minusValue;
+		public Int16 sensorBias;
 	}
 
 }
