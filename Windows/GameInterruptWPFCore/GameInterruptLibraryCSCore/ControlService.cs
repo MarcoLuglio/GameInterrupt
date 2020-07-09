@@ -137,9 +137,9 @@ namespace GameInterruptLibraryCSCore
 					*/
 				}
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
-				// TODO log exception
+				System.Diagnostics.Debug.WriteLine($"{exception.Message}");
 			}
 
 			//running = true;
