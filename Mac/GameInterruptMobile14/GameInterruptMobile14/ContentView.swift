@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  GameInterrupt
+//  GameInterruptMobile14
 //
-//  Created by Marco Luglio on 29/06/20.
+//  Created by Marco Luglio on 14/07/20.
 //
 
 import SwiftUI

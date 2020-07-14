@@ -1,0 +1,605 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A9E238FC24BE57C600405B3D /* GameInterruptMobile14App.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E238FB24BE57C600405B3D /* GameInterruptMobile14App.swift */; };
+		A9E238FE24BE57C600405B3D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E238FD24BE57C600405B3D /* ContentView.swift */; };
+		A9E2390024BE57C700405B3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9E238FF24BE57C700405B3D /* Assets.xcassets */; };
+		A9E2390324BE57C700405B3D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9E2390224BE57C700405B3D /* Preview Assets.xcassets */; };
+		A9E2390E24BE57C700405B3D /* GameInterruptMobile14Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E2390D24BE57C700405B3D /* GameInterruptMobile14Tests.swift */; };
+		A9E2391924BE57C700405B3D /* GameInterruptMobile14UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E2391824BE57C700405B3D /* GameInterruptMobile14UITests.swift */; };
+		A9E2392824BE57E300405B3D /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E2392724BE57E300405B3D /* GameController.framework */; };
+		A9E2392A24BE57ED00405B3D /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9E2392924BE57ED00405B3D /* CoreHaptics.framework */; };
+		A9E2392C24BE580E00405B3D /* GameControllerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E2392B24BE580E00405B3D /* GameControllerMonitor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A9E2390A24BE57C700405B3D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9E238F024BE57C600405B3D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A9E238F724BE57C600405B3D;
+			remoteInfo = GameInterruptMobile14;
+		};
+		A9E2391524BE57C700405B3D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9E238F024BE57C600405B3D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A9E238F724BE57C600405B3D;
+			remoteInfo = GameInterruptMobile14;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A9E238F824BE57C600405B3D /* GameInterruptMobile14.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameInterruptMobile14.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9E238FB24BE57C600405B3D /* GameInterruptMobile14App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptMobile14App.swift; sourceTree = "<group>"; };
+		A9E238FD24BE57C600405B3D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A9E238FF24BE57C700405B3D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A9E2390224BE57C700405B3D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A9E2390424BE57C700405B3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9E2390924BE57C700405B3D /* GameInterruptMobile14Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptMobile14Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9E2390D24BE57C700405B3D /* GameInterruptMobile14Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptMobile14Tests.swift; sourceTree = "<group>"; };
+		A9E2390F24BE57C700405B3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9E2391424BE57C700405B3D /* GameInterruptMobile14UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptMobile14UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9E2391824BE57C700405B3D /* GameInterruptMobile14UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptMobile14UITests.swift; sourceTree = "<group>"; };
+		A9E2391A24BE57C700405B3D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9E2392724BE57E300405B3D /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		A9E2392924BE57ED00405B3D /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
+		A9E2392B24BE580E00405B3D /* GameControllerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerMonitor.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A9E238F524BE57C600405B3D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9E2392A24BE57ED00405B3D /* CoreHaptics.framework in Frameworks */,
+				A9E2392824BE57E300405B3D /* GameController.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2390624BE57C700405B3D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2391124BE57C700405B3D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A9E238EF24BE57C600405B3D = {
+			isa = PBXGroup;
+			children = (
+				A9E238FA24BE57C600405B3D /* GameInterruptMobile14 */,
+				A9E2390C24BE57C700405B3D /* GameInterruptMobile14Tests */,
+				A9E2391724BE57C700405B3D /* GameInterruptMobile14UITests */,
+				A9E238F924BE57C600405B3D /* Products */,
+				A9E2392624BE57E300405B3D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A9E238F924BE57C600405B3D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A9E238F824BE57C600405B3D /* GameInterruptMobile14.app */,
+				A9E2390924BE57C700405B3D /* GameInterruptMobile14Tests.xctest */,
+				A9E2391424BE57C700405B3D /* GameInterruptMobile14UITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A9E238FA24BE57C600405B3D /* GameInterruptMobile14 */ = {
+			isa = PBXGroup;
+			children = (
+				A9E238FB24BE57C600405B3D /* GameInterruptMobile14App.swift */,
+				A9E238FD24BE57C600405B3D /* ContentView.swift */,
+				A9E2392B24BE580E00405B3D /* GameControllerMonitor.swift */,
+				A9E238FF24BE57C700405B3D /* Assets.xcassets */,
+				A9E2390424BE57C700405B3D /* Info.plist */,
+				A9E2390124BE57C700405B3D /* Preview Content */,
+			);
+			path = GameInterruptMobile14;
+			sourceTree = "<group>";
+		};
+		A9E2390124BE57C700405B3D /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				A9E2390224BE57C700405B3D /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		A9E2390C24BE57C700405B3D /* GameInterruptMobile14Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A9E2390D24BE57C700405B3D /* GameInterruptMobile14Tests.swift */,
+				A9E2390F24BE57C700405B3D /* Info.plist */,
+			);
+			path = GameInterruptMobile14Tests;
+			sourceTree = "<group>";
+		};
+		A9E2391724BE57C700405B3D /* GameInterruptMobile14UITests */ = {
+			isa = PBXGroup;
+			children = (
+				A9E2391824BE57C700405B3D /* GameInterruptMobile14UITests.swift */,
+				A9E2391A24BE57C700405B3D /* Info.plist */,
+			);
+			path = GameInterruptMobile14UITests;
+			sourceTree = "<group>";
+		};
+		A9E2392624BE57E300405B3D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A9E2392924BE57ED00405B3D /* CoreHaptics.framework */,
+				A9E2392724BE57E300405B3D /* GameController.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A9E238F724BE57C600405B3D /* GameInterruptMobile14 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9E2391D24BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14" */;
+			buildPhases = (
+				A9E238F424BE57C600405B3D /* Sources */,
+				A9E238F524BE57C600405B3D /* Frameworks */,
+				A9E238F624BE57C600405B3D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameInterruptMobile14;
+			productName = GameInterruptMobile14;
+			productReference = A9E238F824BE57C600405B3D /* GameInterruptMobile14.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A9E2390824BE57C700405B3D /* GameInterruptMobile14Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9E2392024BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14Tests" */;
+			buildPhases = (
+				A9E2390524BE57C700405B3D /* Sources */,
+				A9E2390624BE57C700405B3D /* Frameworks */,
+				A9E2390724BE57C700405B3D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A9E2390B24BE57C700405B3D /* PBXTargetDependency */,
+			);
+			name = GameInterruptMobile14Tests;
+			productName = GameInterruptMobile14Tests;
+			productReference = A9E2390924BE57C700405B3D /* GameInterruptMobile14Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A9E2391324BE57C700405B3D /* GameInterruptMobile14UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9E2392324BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14UITests" */;
+			buildPhases = (
+				A9E2391024BE57C700405B3D /* Sources */,
+				A9E2391124BE57C700405B3D /* Frameworks */,
+				A9E2391224BE57C700405B3D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A9E2391624BE57C700405B3D /* PBXTargetDependency */,
+			);
+			name = GameInterruptMobile14UITests;
+			productName = GameInterruptMobile14UITests;
+			productReference = A9E2391424BE57C700405B3D /* GameInterruptMobile14UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A9E238F024BE57C600405B3D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1200;
+				LastUpgradeCheck = 1200;
+				TargetAttributes = {
+					A9E238F724BE57C600405B3D = {
+						CreatedOnToolsVersion = 12.0;
+					};
+					A9E2390824BE57C700405B3D = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = A9E238F724BE57C600405B3D;
+					};
+					A9E2391324BE57C700405B3D = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = A9E238F724BE57C600405B3D;
+					};
+				};
+			};
+			buildConfigurationList = A9E238F324BE57C600405B3D /* Build configuration list for PBXProject "GameInterruptMobile14" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A9E238EF24BE57C600405B3D;
+			productRefGroup = A9E238F924BE57C600405B3D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A9E238F724BE57C600405B3D /* GameInterruptMobile14 */,
+				A9E2390824BE57C700405B3D /* GameInterruptMobile14Tests */,
+				A9E2391324BE57C700405B3D /* GameInterruptMobile14UITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A9E238F624BE57C600405B3D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9E2390324BE57C700405B3D /* Preview Assets.xcassets in Resources */,
+				A9E2390024BE57C700405B3D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2390724BE57C700405B3D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2391224BE57C700405B3D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A9E238F424BE57C600405B3D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9E238FE24BE57C600405B3D /* ContentView.swift in Sources */,
+				A9E2392C24BE580E00405B3D /* GameControllerMonitor.swift in Sources */,
+				A9E238FC24BE57C600405B3D /* GameInterruptMobile14App.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2390524BE57C700405B3D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9E2390E24BE57C700405B3D /* GameInterruptMobile14Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9E2391024BE57C700405B3D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9E2391924BE57C700405B3D /* GameInterruptMobile14UITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A9E2390B24BE57C700405B3D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A9E238F724BE57C600405B3D /* GameInterruptMobile14 */;
+			targetProxy = A9E2390A24BE57C700405B3D /* PBXContainerItemProxy */;
+		};
+		A9E2391624BE57C700405B3D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A9E238F724BE57C600405B3D /* GameInterruptMobile14 */;
+			targetProxy = A9E2391524BE57C700405B3D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A9E2391B24BE57C700405B3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A9E2391C24BE57C700405B3D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A9E2391E24BE57C700405B3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterruptMobile14/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterruptMobile14/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A9E2391F24BE57C700405B3D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterruptMobile14/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterruptMobile14/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A9E2392124BE57C700405B3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMobile14Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterruptMobile14.app/GameInterruptMobile14";
+			};
+			name = Debug;
+		};
+		A9E2392224BE57C700405B3D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMobile14Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterruptMobile14.app/GameInterruptMobile14";
+			};
+			name = Release;
+		};
+		A9E2392424BE57C700405B3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMobile14UITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GameInterruptMobile14;
+			};
+			name = Debug;
+		};
+		A9E2392524BE57C700405B3D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMobile14UITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMobile14UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GameInterruptMobile14;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A9E238F324BE57C600405B3D /* Build configuration list for PBXProject "GameInterruptMobile14" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9E2391B24BE57C700405B3D /* Debug */,
+				A9E2391C24BE57C700405B3D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9E2391D24BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9E2391E24BE57C700405B3D /* Debug */,
+				A9E2391F24BE57C700405B3D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9E2392024BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9E2392124BE57C700405B3D /* Debug */,
+				A9E2392224BE57C700405B3D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A9E2392324BE57C700405B3D /* Build configuration list for PBXNativeTarget "GameInterruptMobile14UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9E2392424BE57C700405B3D /* Debug */,
+				A9E2392524BE57C700405B3D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A9E238F024BE57C600405B3D /* Project object */;
+}

@@ -1,0 +1,618 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A90EBF7524BE6E4D00C8DEAE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90EBF7424BE6E4D00C8DEAE /* AppDelegate.swift */; };
+		A90EBF7724BE6E4D00C8DEAE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90EBF7624BE6E4D00C8DEAE /* ContentView.swift */; };
+		A90EBF7924BE6E4E00C8DEAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A90EBF7824BE6E4E00C8DEAE /* Assets.xcassets */; };
+		A90EBF7C24BE6E4E00C8DEAE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A90EBF7B24BE6E4E00C8DEAE /* Preview Assets.xcassets */; };
+		A90EBF7F24BE6E4E00C8DEAE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A90EBF7D24BE6E4E00C8DEAE /* Main.storyboard */; };
+		A90EBF8B24BE6E4E00C8DEAE /* GameInterruptMacOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90EBF8A24BE6E4E00C8DEAE /* GameInterruptMacOSTests.swift */; };
+		A90EBF9624BE6E4E00C8DEAE /* GameInterruptMacOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90EBF9524BE6E4E00C8DEAE /* GameInterruptMacOSUITests.swift */; };
+		A90EBFA524BE6ED500C8DEAE /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90EBFA424BE6ED500C8DEAE /* GameController.framework */; };
+		A90EBFA724BE6F1E00C8DEAE /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90EBFA624BE6F1E00C8DEAE /* CoreHaptics.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A90EBF8724BE6E4E00C8DEAE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90EBF6924BE6E4D00C8DEAE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90EBF7024BE6E4D00C8DEAE;
+			remoteInfo = GameInterruptMacOS;
+		};
+		A90EBF9224BE6E4E00C8DEAE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90EBF6924BE6E4D00C8DEAE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A90EBF7024BE6E4D00C8DEAE;
+			remoteInfo = GameInterruptMacOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A90EBF7124BE6E4D00C8DEAE /* GameInterruptMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameInterruptMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A90EBF7424BE6E4D00C8DEAE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A90EBF7624BE6E4D00C8DEAE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A90EBF7824BE6E4E00C8DEAE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A90EBF7B24BE6E4E00C8DEAE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A90EBF7E24BE6E4E00C8DEAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A90EBF8024BE6E4E00C8DEAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A90EBF8124BE6E4E00C8DEAE /* GameInterruptMacOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GameInterruptMacOS.entitlements; sourceTree = "<group>"; };
+		A90EBF8624BE6E4E00C8DEAE /* GameInterruptMacOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptMacOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A90EBF8A24BE6E4E00C8DEAE /* GameInterruptMacOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptMacOSTests.swift; sourceTree = "<group>"; };
+		A90EBF8C24BE6E4E00C8DEAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A90EBF9124BE6E4E00C8DEAE /* GameInterruptMacOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameInterruptMacOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A90EBF9524BE6E4E00C8DEAE /* GameInterruptMacOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterruptMacOSUITests.swift; sourceTree = "<group>"; };
+		A90EBF9724BE6E4E00C8DEAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A90EBFA424BE6ED500C8DEAE /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		A90EBFA624BE6F1E00C8DEAE /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A90EBF6E24BE6E4D00C8DEAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EBFA724BE6F1E00C8DEAE /* CoreHaptics.framework in Frameworks */,
+				A90EBFA524BE6ED500C8DEAE /* GameController.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8324BE6E4E00C8DEAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8E24BE6E4E00C8DEAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A90EBF6824BE6E4D00C8DEAE = {
+			isa = PBXGroup;
+			children = (
+				A90EBF7324BE6E4D00C8DEAE /* GameInterruptMacOS */,
+				A90EBF8924BE6E4E00C8DEAE /* GameInterruptMacOSTests */,
+				A90EBF9424BE6E4E00C8DEAE /* GameInterruptMacOSUITests */,
+				A90EBF7224BE6E4D00C8DEAE /* Products */,
+				A90EBFA324BE6ED400C8DEAE /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A90EBF7224BE6E4D00C8DEAE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBF7124BE6E4D00C8DEAE /* GameInterruptMacOS.app */,
+				A90EBF8624BE6E4E00C8DEAE /* GameInterruptMacOSTests.xctest */,
+				A90EBF9124BE6E4E00C8DEAE /* GameInterruptMacOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A90EBF7324BE6E4D00C8DEAE /* GameInterruptMacOS */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBF7424BE6E4D00C8DEAE /* AppDelegate.swift */,
+				A90EBF7624BE6E4D00C8DEAE /* ContentView.swift */,
+				A90EBF7824BE6E4E00C8DEAE /* Assets.xcassets */,
+				A90EBF7D24BE6E4E00C8DEAE /* Main.storyboard */,
+				A90EBF8024BE6E4E00C8DEAE /* Info.plist */,
+				A90EBF8124BE6E4E00C8DEAE /* GameInterruptMacOS.entitlements */,
+				A90EBF7A24BE6E4E00C8DEAE /* Preview Content */,
+			);
+			path = GameInterruptMacOS;
+			sourceTree = "<group>";
+		};
+		A90EBF7A24BE6E4E00C8DEAE /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBF7B24BE6E4E00C8DEAE /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		A90EBF8924BE6E4E00C8DEAE /* GameInterruptMacOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBF8A24BE6E4E00C8DEAE /* GameInterruptMacOSTests.swift */,
+				A90EBF8C24BE6E4E00C8DEAE /* Info.plist */,
+			);
+			path = GameInterruptMacOSTests;
+			sourceTree = "<group>";
+		};
+		A90EBF9424BE6E4E00C8DEAE /* GameInterruptMacOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBF9524BE6E4E00C8DEAE /* GameInterruptMacOSUITests.swift */,
+				A90EBF9724BE6E4E00C8DEAE /* Info.plist */,
+			);
+			path = GameInterruptMacOSUITests;
+			sourceTree = "<group>";
+		};
+		A90EBFA324BE6ED400C8DEAE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A90EBFA624BE6F1E00C8DEAE /* CoreHaptics.framework */,
+				A90EBFA424BE6ED500C8DEAE /* GameController.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A90EBF7024BE6E4D00C8DEAE /* GameInterruptMacOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90EBF9A24BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOS" */;
+			buildPhases = (
+				A90EBF6D24BE6E4D00C8DEAE /* Sources */,
+				A90EBF6E24BE6E4D00C8DEAE /* Frameworks */,
+				A90EBF6F24BE6E4D00C8DEAE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameInterruptMacOS;
+			productName = GameInterruptMacOS;
+			productReference = A90EBF7124BE6E4D00C8DEAE /* GameInterruptMacOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A90EBF8524BE6E4E00C8DEAE /* GameInterruptMacOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90EBF9D24BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOSTests" */;
+			buildPhases = (
+				A90EBF8224BE6E4E00C8DEAE /* Sources */,
+				A90EBF8324BE6E4E00C8DEAE /* Frameworks */,
+				A90EBF8424BE6E4E00C8DEAE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A90EBF8824BE6E4E00C8DEAE /* PBXTargetDependency */,
+			);
+			name = GameInterruptMacOSTests;
+			productName = GameInterruptMacOSTests;
+			productReference = A90EBF8624BE6E4E00C8DEAE /* GameInterruptMacOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A90EBF9024BE6E4E00C8DEAE /* GameInterruptMacOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90EBFA024BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOSUITests" */;
+			buildPhases = (
+				A90EBF8D24BE6E4E00C8DEAE /* Sources */,
+				A90EBF8E24BE6E4E00C8DEAE /* Frameworks */,
+				A90EBF8F24BE6E4E00C8DEAE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A90EBF9324BE6E4E00C8DEAE /* PBXTargetDependency */,
+			);
+			name = GameInterruptMacOSUITests;
+			productName = GameInterruptMacOSUITests;
+			productReference = A90EBF9124BE6E4E00C8DEAE /* GameInterruptMacOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A90EBF6924BE6E4D00C8DEAE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1150;
+				LastUpgradeCheck = 1150;
+				ORGANIZATIONNAME = "Marco Luglio";
+				TargetAttributes = {
+					A90EBF7024BE6E4D00C8DEAE = {
+						CreatedOnToolsVersion = 11.5;
+					};
+					A90EBF8524BE6E4E00C8DEAE = {
+						CreatedOnToolsVersion = 11.5;
+						TestTargetID = A90EBF7024BE6E4D00C8DEAE;
+					};
+					A90EBF9024BE6E4E00C8DEAE = {
+						CreatedOnToolsVersion = 11.5;
+						TestTargetID = A90EBF7024BE6E4D00C8DEAE;
+					};
+				};
+			};
+			buildConfigurationList = A90EBF6C24BE6E4D00C8DEAE /* Build configuration list for PBXProject "GameInterruptMacOS" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A90EBF6824BE6E4D00C8DEAE;
+			productRefGroup = A90EBF7224BE6E4D00C8DEAE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A90EBF7024BE6E4D00C8DEAE /* GameInterruptMacOS */,
+				A90EBF8524BE6E4E00C8DEAE /* GameInterruptMacOSTests */,
+				A90EBF9024BE6E4E00C8DEAE /* GameInterruptMacOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A90EBF6F24BE6E4D00C8DEAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EBF7F24BE6E4E00C8DEAE /* Main.storyboard in Resources */,
+				A90EBF7C24BE6E4E00C8DEAE /* Preview Assets.xcassets in Resources */,
+				A90EBF7924BE6E4E00C8DEAE /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8424BE6E4E00C8DEAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8F24BE6E4E00C8DEAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A90EBF6D24BE6E4D00C8DEAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EBF7724BE6E4D00C8DEAE /* ContentView.swift in Sources */,
+				A90EBF7524BE6E4D00C8DEAE /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8224BE6E4E00C8DEAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EBF8B24BE6E4E00C8DEAE /* GameInterruptMacOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A90EBF8D24BE6E4E00C8DEAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EBF9624BE6E4E00C8DEAE /* GameInterruptMacOSUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A90EBF8824BE6E4E00C8DEAE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90EBF7024BE6E4D00C8DEAE /* GameInterruptMacOS */;
+			targetProxy = A90EBF8724BE6E4E00C8DEAE /* PBXContainerItemProxy */;
+		};
+		A90EBF9324BE6E4E00C8DEAE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A90EBF7024BE6E4D00C8DEAE /* GameInterruptMacOS */;
+			targetProxy = A90EBF9224BE6E4E00C8DEAE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A90EBF7D24BE6E4E00C8DEAE /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A90EBF7E24BE6E4E00C8DEAE /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A90EBF9824BE6E4E00C8DEAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A90EBF9924BE6E4E00C8DEAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		A90EBF9B24BE6E4E00C8DEAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GameInterruptMacOS/GameInterruptMacOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterruptMacOS/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterruptMacOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A90EBF9C24BE6E4E00C8DEAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GameInterruptMacOS/GameInterruptMacOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"GameInterruptMacOS/Preview Content\"";
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = GameInterruptMacOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A90EBF9E24BE6E4E00C8DEAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMacOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterruptMacOS.app/Contents/MacOS/GameInterruptMacOS";
+			};
+			name = Debug;
+		};
+		A90EBF9F24BE6E4E00C8DEAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMacOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GameInterruptMacOS.app/Contents/MacOS/GameInterruptMacOS";
+			};
+			name = Release;
+		};
+		A90EBFA124BE6E4E00C8DEAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMacOSUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = GameInterruptMacOS;
+			};
+			name = Debug;
+		};
+		A90EBFA224BE6E4E00C8DEAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = CTFP6EH8GL;
+				INFOPLIST_FILE = GameInterruptMacOSUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = marcodejulho.GameInterruptMacOSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = GameInterruptMacOS;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A90EBF6C24BE6E4D00C8DEAE /* Build configuration list for PBXProject "GameInterruptMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90EBF9824BE6E4E00C8DEAE /* Debug */,
+				A90EBF9924BE6E4E00C8DEAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90EBF9A24BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90EBF9B24BE6E4E00C8DEAE /* Debug */,
+				A90EBF9C24BE6E4E00C8DEAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90EBF9D24BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90EBF9E24BE6E4E00C8DEAE /* Debug */,
+				A90EBF9F24BE6E4E00C8DEAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90EBFA024BE6E4E00C8DEAE /* Build configuration list for PBXNativeTarget "GameInterruptMacOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A90EBFA124BE6E4E00C8DEAE /* Debug */,
+				A90EBFA224BE6E4E00C8DEAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A90EBF6924BE6E4D00C8DEAE /* Project object */;
+}

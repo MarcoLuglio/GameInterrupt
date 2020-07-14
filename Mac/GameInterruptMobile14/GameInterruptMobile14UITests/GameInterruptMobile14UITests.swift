@@ -1,13 +1,13 @@
 //
-//  GameInterruptUITests.swift
-//  GameInterruptUITests
+//  GameInterruptMobile14UITests.swift
+//  GameInterruptMobile14UITests
 //
-//  Created by Marco Luglio on 29/06/20.
+//  Created by Marco Luglio on 14/07/20.
 //
 
 import XCTest
 
-class GameInterruptUITests: XCTestCase {
+class GameInterruptMobile14UITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
